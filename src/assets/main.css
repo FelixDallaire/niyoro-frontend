@@ -1,0 +1,109 @@
+:root {
+  /* Palette de couleurs générée automatiquement, je n'en suis pas l'auteur. */
+  /* Primary Base Colors */
+  --primary-dark-blue: #0e2639; /* Primary dark blue for main text or headers */
+  --primary-light-blue: #89cdc9; /* Primary light blue for highlights or secondary elements */
+  --primary-soft-white: #dbebe9; /* Soft white for backgrounds */
+
+  /* Extended Color Palette */
+
+  /* Dark Blue Variants */
+  --dark-blue-lighter: #1a3c57; /* Lighter variant of dark blue for subtle hover effects */
+  --dark-blue-darker: #081522; /* Darker variant of dark blue for deeper shadows or accents */
+
+  /* Light Blue Variants */
+  --light-blue-bright: #a3e3e0; /* Brighter variant of light blue for emphasis or active states */
+  --light-blue-muted: #72b5b3; /* Muted variant of light blue for less prominent components */
+
+  /* Soft White Variants */
+  --soft-white-light: #ffffff; /* Pure white for backgrounds or highlights */
+  --soft-white-muted: #c1d5d2; /* Muted white for disabled elements or subtle backgrounds */
+
+  /* Additional Colors for Feedback */
+  --accent-orange: #ff8c42; /* Accent color for important actions or highlights */
+  --success-green: #4caf50; /* Success color for confirmations or positive feedback */
+  --warning-yellow: #ffa726; /* Warning color for cautionary messages or alerts */
+  --danger-red: #e53935; /* Danger color for errors or destructive actions */
+  --info-blue: #29b6f6; /* Info color for informational messages or secondary highlights */
+
+  /* Greyscale Colors */
+  --grey-light: #f5f5f5; /* Light grey for general backgrounds */
+  --grey-medium: #b0bec5; /* Medium grey for borders or secondary text */
+  --grey-dark: #37474f; /* Dark grey for text or subtle accents */
+
+  /* Active & Inactive State Colors */
+  --active-state-color: #007bff; /* Active state color for selected elements (e.g., tabs, buttons) */
+  --hover-state-color: #0056b3; /* Hover state color for interactive elements */
+  --inactive-state-color: #b0bec5; /* Inactive state color for non-selected or disabled items */
+  --disabled-state-color: #e0e0e0; /* Disabled state color for elements that cannot be interacted with */
+}
+
+body {
+  background-color: var(--primary-soft-white) !important;
+  color: var(--primary-dark-blue) !important;
+}
+
+.navbar {
+  background-color: var(--dark-blue-lighter) !important;
+}
+
+.nav-link {
+  color: var(--grey-dark) !important;
+}
+
+.nav-link:hover {
+  color: var(--hover-state-color) !important;
+}
+
+.nav-link.active {
+  color: var(--active-state-color) !important;
+  font-weight: bold !important;
+}
+
+.btn-primary {
+  background-color: var(--primary-light-blue) !important;
+  border-color: var(--light-blue-muted) !important;
+  color: var(--primary-dark-blue) !important;
+}
+
+.btn-danger {
+  background-color: var(--danger-red) !important;
+  color: var(--soft-white-light) !important;
+}
+
+.btn:disabled {
+  background-color: var(--disabled-state-color) !important;
+  color: var(--grey-medium) !important;
+}
+
+.btn-outline-primary {
+  border-color: var(--primary-light-blue) !important;
+  color: var(--primary-light-blue) !important;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+  background-color: var(--primary-light-blue) !important;
+  color: var(--soft-white-light) !important;
+}
+
+.btn-outline-danger {
+  border-color: var(--danger-red) !important;
+  color: var(--danger-red) !important;
+}
+
+.btn-outline-danger:hover,
+.btn-outline-danger:focus {
+  background-color: var(--danger-red) !important;
+  color: var(--soft-white-light) !important;
+}
+
+.btn-outline {
+  background-color: transparent !important;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out !important;
+}
+
+.btn-outline:disabled {
+  border-color: var(--disabled-state-color) !important;
+  color: var(--grey-medium) !important;
+}

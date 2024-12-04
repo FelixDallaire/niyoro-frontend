@@ -1,17 +1,251 @@
 <template>
-    <p>Signup form component</p>
-</template>
-
-<script>
-export default {
-    setup () {
+    <div class="rounded p-4 shadow-sm mx-auto bg-white">
+      <h2 class="mb-4">Créer un compte</h2>
+      <form @submit.prevent="handleSignup" class="needs-validation" novalidate>
+        <div class="row">
+          <!-- Username -->
+          <div class="col-md-4 mb-3">
+            <label for="username" class="form-label">Pseudo</label>
+            <input
+              type="text"
+              class="form-control input-soft-bg"
+              :class="validationClass('username')"
+              id="username"
+              v-model="username"
+              @input="validateField('username')"
+              required
+            />
+            <div class="invalid-feedback">
+              Le pseudo est requis et doit contenir entre 1 et 50 caractères.
+            </div>
+          </div>
+          
+          <!-- First Name -->
+          <div class="col-md-4 mb-3">
+            <label for="firstName" class="form-label">Prénom</label>
+            <input
+              type="text"
+              class="form-control input-soft-bg"
+              :class="validationClass('firstName')"
+              id="firstName"
+              v-model="firstName"
+              @input="validateField('firstName')"
+              required
+            />
+            <div class="invalid-feedback">
+              Le prénom est requis et doit contenir entre 1 et 50 caractères.
+            </div>
+          </div>
+          
+          <!-- Last Name -->
+          <div class="col-md-4 mb-3">
+            <label for="lastName" class="form-label">Nom</label>
+            <input
+              type="text"
+              class="form-control input-soft-bg"
+              :class="validationClass('lastName')"
+              id="lastName"
+              v-model="lastName"
+              @input="validateField('lastName')"
+              required
+            />
+            <div class="invalid-feedback">
+              Le nom est requis et doit contenir entre 1 et 50 caractères.
+            </div>
+          </div>
+        </div>
         
-
-        return {}
-    }
-}
-</script>
-
-<style scoped>
-
-</style>
+        <!-- Email -->
+        <div class="mb-3">
+          <label for="email" class="form-label">Courriel</label>
+          <input
+            type="email"
+            class="form-control input-soft-bg"
+            :class="validationClass('email')"
+            id="email"
+            v-model="email"
+            @input="validateField('email')"
+            required
+          />
+          <div class="invalid-feedback">
+            Le courriel est invalide.
+          </div>
+        </div>
+  
+        <!-- Password -->
+        <div class="mb-3">
+          <label for="password" class="form-label">Mot de passe</label>
+          <input
+            type="password"
+            class="form-control input-soft-bg"
+            :class="validationClass('password')"
+            id="password"
+            v-model="password"
+            @input="validateField('password')"
+            minlength="6"
+            required
+          />
+          <div class="invalid-feedback">
+            Le mot de passe doit contenir au moins 6 caractères.
+          </div>
+        </div>
+        
+        <!-- Confirm Password -->
+        <div class="mb-3">
+          <label for="confirmPassword" class="form-label">Confirmer le mot de passe</label>
+          <input
+            type="password"
+            class="form-control input-soft-bg"
+            :class="validationClass('confirmPassword')"
+            id="confirmPassword"
+            v-model="confirmPassword"
+            @input="validateField('confirmPassword')"
+            required
+          />
+          <div class="invalid-feedback">
+            Les mots de passe ne correspondent pas.
+          </div>
+        </div>
+        
+        <!-- Error Message -->
+        <div v-if="errorMessage" class="alert alert-danger">
+          {{ errorMessage }}
+        </div>
+        
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary w-100">S'inscrire</button>
+      </form>
+    </div>
+  </template>
+  
+  <script>
+  import { ref, computed } from 'vue';
+  import { signup } from '../services/authService';
+  
+  export default {
+    name: 'SignupForm',
+    setup() {
+      const username = ref('');
+      const firstName = ref('');
+      const lastName = ref('');
+      const email = ref('');
+      const password = ref('');
+      const confirmPassword = ref('');
+      const errorMessage = ref('');
+      const attemptedSubmit = ref(false);
+  
+      const isValid = {
+        username: ref(false),
+        firstName: ref(false),
+        lastName: ref(false),
+        email: ref(false),
+        password: ref(false),
+        confirmPassword: ref(false),
+      };
+  
+      const handleSignup = async () => {
+        attemptedSubmit.value = true;
+        validateForm();
+        console.log('Form validation status:', Object.fromEntries(Object.entries(isValid).map(([key, val]) => [key, val.value])));
+        if (!Object.values(isValid).every((field) => field.value)) {
+          console.log('Form validation failed:', Object.fromEntries(Object.entries(isValid).map(([key, val]) => [key, val.value])));
+          return;
+        }
+  
+        // Preparing user data
+        const userData = {
+          username: username.value,
+          first_name: firstName.value,
+          last_name: lastName.value,
+          email: email.value,
+          password: password.value,
+        };
+  
+        try {
+          await signup(userData);
+          console.log('Signup successful, redirecting to login page.');
+          // Redirect user to login page or another appropriate view upon successful signup
+          window.location.href = '/login';
+        } catch (error) {
+          console.log('Signup error:', error);
+          if (error.response && error.response.data && error.response.data.message) {
+            errorMessage.value = error.response.data.message;
+          } else {
+            errorMessage.value = "Une erreur est survenue lors de l'inscription.";
+          }
+        }
+      };
+  
+      const validateForm = () => {
+        validateField('username');
+        validateField('firstName');
+        validateField('lastName');
+        validateField('email');
+        validateField('password');
+        validateField('confirmPassword');
+      };
+  
+      const validateField = (field) => {
+        switch (field) {
+          case 'username':
+            isValid.username.value = username.value.trim().length >= 1 && username.value.trim().length <= 50;
+            break;
+          case 'firstName':
+            isValid.firstName.value = firstName.value.trim().length >= 1 && firstName.value.trim().length <= 50;
+            break;
+          case 'lastName':
+            isValid.lastName.value = lastName.value.trim().length >= 1 && lastName.value.trim().length <= 50;
+            break;
+          case 'email':
+            isValid.email.value = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim());
+            break;
+          case 'password':
+            isValid.password.value = password.value.length >= 6;
+            break;
+          case 'confirmPassword':
+            isValid.confirmPassword.value = password.value === confirmPassword.value && confirmPassword.value.trim() !== '';
+            break;
+        }
+        console.log(`Validation status for ${field}:`, isValid[field].value);
+      };
+  
+      const validationClass = (field) => {
+        if (!attemptedSubmit.value) return '';
+        return isValid[field].value ? 'is-valid' : 'is-invalid';
+      };
+  
+      return {
+        username,
+        firstName,
+        lastName,
+        email,
+        password,
+        confirmPassword,
+        errorMessage,
+        handleSignup,
+        attemptedSubmit,
+        isValid,
+        validateField,
+        validationClass,
+      };
+    },
+  };
+  </script>
+  
+  <style scoped>
+  h2 {
+    color: var(--primary-dark-blue) !important;
+  }
+  
+  .btn-primary {
+    background-color: var(--primary-light-blue) !important;
+    border-color: var(--light-blue-muted) !important;
+    color: var(--primary-dark-blue) !important;
+  }
+  
+  .input-soft-bg {
+    background-color: whitesmoke !important;
+    border: none !important;
+  }
+  </style>
+  

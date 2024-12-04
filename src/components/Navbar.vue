@@ -1,105 +1,79 @@
 <template>
-    <nav class="navbar">
-      <div class="container">
-        <router-link to="/" class="navbar-brand">Niyɔrɔ</router-link>
-        <ul class="nav-links">
-          <li>
-            <router-link to="/">Home</router-link>
+  <nav class="navbar navbar-expand-lg bg-light shadow-sm">
+    <div class="container-fluid">
+      
+      <a class="navbar-brand d-flex align-items-center" href="/">
+        <img src="../assets/logo.svg" alt="Logo" class="me-2" width="auto" height="25" />
+      </a>
+
+      <div class="collapse navbar-collapse justify-content-center">
+        <ul class="navbar-nav mb-2 mb-lg-0">
+          <li class="nav-item" v-if="isAuthenticated">
+            <router-link class="nav-link" :class="{ active: isActive('/add') }" to="/add">Add Item</router-link>
           </li>
-          <li v-if="isAuthenticated">
-            <router-link :to="`/profile/${user?.userId}`">Profile</router-link>
-          </li>
-          <li v-if="isAdmin">
-            <router-link to="/admin/users">Admin Panel</router-link>
+          
+          <li class="nav-item" v-if="isAdmin">
+            <router-link class="nav-link" :class="{ active: isActive('/tags') }" to="/tags">Tags</router-link>
           </li>
         </ul>
-        <div class="auth-actions">
-          <button v-if="!isAuthenticated" @click="goToLogin">Login</button>
-          <button v-if="isAuthenticated" @click="logout">Logout</button>
+      </div>
+
+      <div class="d-flex align-items-center">
+        <div v-if="isAuthenticated">
+          <router-link to="/profile" class="me-2">
+            <img :src="userAvatar" alt="User Avatar" class="rounded-circle" width="40" height="40" />
+          </router-link>
+          <button @click="logout" class="btn btn-sm btn-danger">Logout</button>
+        </div>
+        <div v-else>
+          <router-link to="/login" class="btn btn-primary">Connexion</router-link>
+          <router-link to="/signup" class="btn btn-outline-primary ms-2">Inscription</router-link>
         </div>
       </div>
-    </nav>
-  </template>
-  
-  <script>
-  import { useAuthStore } from '../stores/authStore';
-  import { useRouter } from 'vue-router';
-  
-  export default {
-    setup() {
-      const authStore = useAuthStore();
-      const router = useRouter();
-  
-      const { isAuthenticated, isAdmin, user, logoutUser } = authStore;
-  
-      const logout = () => {
-        logoutUser();
-        router.push('/login');
-      };
-  
-      const goToLogin = () => {
-        router.push('/login');
-      };
-  
-      return {
-        isAuthenticated,
-        isAdmin,
-        user,
-        logout,
-        goToLogin,
-      };
-    },
-  };
-  </script>
-  
-  <style scoped>
-  .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #333;
-    padding: 1rem;
-    color: #fff;
-  }
-  
-  .container {
-    display: flex;
-    align-items: center;
-    width: 100%;
-  }
-  
-  .navbar-brand {
-    color: #fff;
-    text-decoration: none;
-    font-size: 1.5rem;
-    margin-right: 2rem;
-  }
-  
-  .nav-links {
-    list-style: none;
-    display: flex;
-    gap: 1rem;
-  }
-  
-  .nav-links a {
-    color: #fff;
-    text-decoration: none;
-  }
-  
-  .auth-actions {
-    margin-left: auto;
-  }
-  
-  button {
-    background-color: #555;
-    color: #fff;
-    border: none;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #777;
-  }
-  </style>
-  
+    </div>
+  </nav>
+</template>
+
+<script>
+import { useAuthStore } from '../stores/authStore';
+
+export default {
+  name: 'NavBar',
+  setup() {
+    const authStore = useAuthStore();
+    const isAuthenticated = authStore.isAuthenticated;
+    const isAdmin = authStore.isAdmin;
+    const userAvatar = authStore.avatar;
+
+    const logout = () => {
+      authStore.logout();
+    };
+
+    const isActive = (route) => {
+      return window.location.pathname === route;
+    };
+
+    return {
+      isAuthenticated,
+      isAdmin,
+      userAvatar,
+      logout,
+      isActive,
+    };
+  },
+};
+</script>
+
+<style scoped>
+.navbar {
+  padding: 1rem;
+  background-color: var(--primary-dark-blue) !important;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}
+</style>

@@ -1,31 +1,30 @@
 import axios from 'axios';
-
-const baseUrl = '/api';
+import apiBaseUrl from '../config/apiConfig';
 
 export const getUser = async () => {
-  return await axios.get(`${baseUrl}/me`);
+  return await axios.get(`${apiBaseUrl}/me`);
 };
 
 export const updateUser = async (updateData) => {
-  return await axios.put(`${baseUrl}/me`, updateData);
+  return await axios.put(`${apiBaseUrl}/me`, updateData);
 };
 
 export const deleteUser = async () => {
-  return await axios.delete(`${baseUrl}/me`);
+  return await axios.delete(`${apiBaseUrl}/me`);
 };
 
 export const getAllUsers = async () => {
-  return await axios.get(`${baseUrl}/users`);
+  return await axios.get(`${apiBaseUrl}/users`);
 };
 
 export const getUserById = async (userId) => {
-  return await axios.get(`${baseUrl}/users/${userId}`);
+  return await axios.get(`${apiBaseUrl}/users/${userId}`);
 };
 
 export const updateUserById = async (userId, updateData) => {
-  return await axios.put(`${baseUrl}/users/${userId}`, updateData);
+  return await axios.put(`${apiBaseUrl}/users/${userId}`, updateData);
 };
 
 export const deleteUserById = async (userId) => {
-  return await axios.delete(`${baseUrl}/users/${userId}`);
+  return await axios.delete(`${apiBaseUrl}/users/${userId}`);
 };

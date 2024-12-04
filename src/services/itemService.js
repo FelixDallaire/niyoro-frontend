@@ -1,6 +1,5 @@
 import axios from 'axios';
-
-const apiBaseUrl = '/api/items';
+import apiBaseUrl from '../config/apiConfig';
 
 export const fetchItems = async () => {
   return await axios.get(apiBaseUrl);

@@ -1,17 +1,26 @@
 <template>
-    <p>Login view</p>
+    <div class="login-view">
+        <LoginForm />
+    </div>
 </template>
 
 <script>
-export default {
-    setup () {
-        
+import LoginForm from '../components/LoginForm.vue';
 
-        return {}
-    }
-}
+export default {
+    name: 'LoginView',
+    components: {
+        LoginForm,
+    },
+};
 </script>
 
 <style scoped>
-
+.login-view {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: var(--primary-soft-white);
+}
 </style>

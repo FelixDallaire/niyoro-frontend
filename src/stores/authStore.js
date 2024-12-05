@@ -8,18 +8,27 @@ export const useAuthStore = defineStore('authStore', {
     loading: false,
     error: null,
   }),
+
   actions: {
     async signupUser(signupData) {
       this.loading = true;
       try {
         const response = await signup(signupData);
-        const { token, ...userData } = response.data;
+        const { token, userId, username, email, avatar, isAdmin } = response.data;
+
+        const user = {
+          userId,
+          username,
+          email,
+          avatar,
+          isAdmin: isAdmin ?? false,
+        };
 
         localStorage.setItem('authToken', token);
-        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('user', JSON.stringify(user));
 
         this.token = token;
-        this.user = userData;
+        this.user = user;
 
         setAuthToken(token);
       } catch (err) {
@@ -28,17 +37,26 @@ export const useAuthStore = defineStore('authStore', {
         this.loading = false;
       }
     },
+
     async loginUser(loginData) {
       this.loading = true;
       try {
         const response = await login(loginData);
-        const { token, ...userData } = response.data;
+        const { token, userId, username, email, avatar, isAdmin } = response.data;
+
+        const user = {
+          userId,
+          username,
+          email,
+          avatar,
+          isAdmin: isAdmin ?? false,
+        };
 
         localStorage.setItem('authToken', token);
-        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('user', JSON.stringify(user));
 
         this.token = token;
-        this.user = userData;
+        this.user = user;
 
         setAuthToken(token);
       } catch (err) {
@@ -47,6 +65,7 @@ export const useAuthStore = defineStore('authStore', {
         this.loading = false;
       }
     },
+
     logoutUser() {
       localStorage.removeItem('authToken');
       localStorage.removeItem('user');
@@ -55,13 +74,25 @@ export const useAuthStore = defineStore('authStore', {
 
       setAuthToken(null);
     },
+
+    refreshStateFromLocalStorage() {
+      this.token = localStorage.getItem('authToken');
+      this.user = JSON.parse(localStorage.getItem('user'));
+
+      if (this.token) {
+        setAuthToken(this.token);
+      } else {
+        setAuthToken(null);
+      }
+    },
   },
+
   getters: {
     isAuthenticated: (state) => {
       return !!state.token;
     },
     isAdmin: (state) => {
-      return state.user?.is_admin ?? false;
+      return state.user?.isAdmin ?? false;
     },
   },
 });

@@ -1,19 +1,25 @@
-import './assets/main.css'
-import 'leaflet/dist/leaflet.css'
+import './assets/main.css';
+import 'leaflet/dist/leaflet.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
+import { createApp } from 'vue';
+import { createPinia } from 'pinia';
 
-import App from './App.vue'
-import router from './router'
+import App from './App.vue';
+import router from './router';
 
-import 'bootstrap/dist/js/bootstrap.bundle.min.js'; 
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
-const app = createApp(App)
+import { useAuthStore } from './stores/authStore';
 
-app.use(createPinia())
-app.use(router)
+const app = createApp(App);
 
-app.mount('#app')
+const pinia = createPinia();
+app.use(pinia);
+app.use(router);
+
+app.mount('#app');
+
+const authStore = useAuthStore();
+authStore.refreshStateFromLocalStorage();

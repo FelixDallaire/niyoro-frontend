@@ -3,7 +3,6 @@
       <h2 class="mb-4">Créer un compte</h2>
       <form @submit.prevent="handleSignup" class="needs-validation" novalidate>
         <div class="row">
-          <!-- Username -->
           <div class="col-md-4 mb-3">
             <label for="username" class="form-label">Pseudo</label>
             <input
@@ -20,7 +19,6 @@
             </div>
           </div>
           
-          <!-- First Name -->
           <div class="col-md-4 mb-3">
             <label for="firstName" class="form-label">Prénom</label>
             <input
@@ -37,7 +35,6 @@
             </div>
           </div>
           
-          <!-- Last Name -->
           <div class="col-md-4 mb-3">
             <label for="lastName" class="form-label">Nom</label>
             <input
@@ -55,7 +52,6 @@
           </div>
         </div>
         
-        <!-- Email -->
         <div class="mb-3">
           <label for="email" class="form-label">Courriel</label>
           <input
@@ -72,7 +68,6 @@
           </div>
         </div>
   
-        <!-- Password -->
         <div class="mb-3">
           <label for="password" class="form-label">Mot de passe</label>
           <input
@@ -90,7 +85,6 @@
           </div>
         </div>
         
-        <!-- Confirm Password -->
         <div class="mb-3">
           <label for="confirmPassword" class="form-label">Confirmer le mot de passe</label>
           <input
@@ -107,12 +101,10 @@
           </div>
         </div>
         
-        <!-- Error Message -->
         <div v-if="errorMessage" class="alert alert-danger">
           {{ errorMessage }}
         </div>
         
-        <!-- Submit Button -->
         <button type="submit" class="btn btn-primary w-100">S'inscrire</button>
       </form>
     </div>
@@ -152,7 +144,6 @@
           return;
         }
   
-        // Preparing user data
         const userData = {
           username: username.value,
           first_name: firstName.value,
@@ -164,7 +155,6 @@
         try {
           await signup(userData);
           console.log('Signup successful, redirecting to login page.');
-          // Redirect user to login page or another appropriate view upon successful signup
           window.location.href = '/login';
         } catch (error) {
           console.log('Signup error:', error);

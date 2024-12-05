@@ -25,13 +25,7 @@
     </div>
 
     <div v-else>
-      <div v-if="showFilterSection" class="d-flex justify-content-between align-items-center mb-3">
-        <h1>Items</h1>
-        <div>
-          <label for="showMyItems" class="form-check-label me-2">Afficher mes items uniquement</label>
-          <input type="checkbox" id="showMyItems" v-model="showMyItems" class="form-check-input" @change="handleCheckboxToggle" />
-        </div>
-      </div>
+      <FilterToggle v-if="showFilterSection" :showMyItems="showMyItems" @update:showMyItems="handleCheckboxToggle" />
 
       <div v-else>
         <h1>Items</h1>
@@ -53,11 +47,13 @@ import { useItemStore } from '../stores/itemStore';
 import { useAuthStore } from '../stores/authStore';
 import { onMounted, ref, computed, watch } from 'vue';
 import ItemCard from '../components/ItemCard.vue';
+import FilterToggle from '../components/FilterToggle.vue';
 
 export default {
   name: 'HomeView',
   components: {
     ItemCard,
+    FilterToggle,
   },
   setup() {
     const itemStore = useItemStore();
@@ -97,7 +93,8 @@ export default {
       }
     });
 
-    const handleCheckboxToggle = () => {
+    const handleCheckboxToggle = (value) => {
+      showMyItems.value = value;
       if (isAuthenticated.value) {
         if (showMyItems.value) {
           itemStore.loadMyItems();
@@ -127,6 +124,7 @@ export default {
 .container {
   max-width: 800px;
 }
+
 .spinner-border {
   width: 3rem;
   height: 3rem;

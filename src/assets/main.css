@@ -55,6 +55,10 @@ body {
   color: var(--primary-dark-blue) !important;
 }
 
+.btn-primary:hover {
+  color: var(--soft-white-light) !important;
+}
+
 .btn-danger {
   background-color: var(--danger-red) !important;
   color: var(--soft-white-light) !important;
@@ -65,8 +69,7 @@ body {
   color: var(--primary-light-blue) !important;
 }
 
-.btn-outline-primary:hover,
-.btn-outline-primary:focus {
+.btn-outline-primary:hover {
   background-color: var(--primary-light-blue) !important;
   color: var(--soft-white-light) !important;
 }
@@ -118,6 +121,10 @@ body {
 }
 
 .input-soft-bg {
-  background-color: var(--soft-white-light) !important;
+  background-color: whitesmoke !important;
   border: none !important;
+}
+
+h2 {
+  color: var(--dark-blue-lighter) !important;
 }

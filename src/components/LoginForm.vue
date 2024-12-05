@@ -122,19 +122,5 @@
   </script>
   
   <style scoped>
-  h2 {
-    color: var(--primary-dark-blue) !important;
-  }
-  
-  .btn-primary {
-    background-color: var(--primary-light-blue) !important;
-    border-color: var(--light-blue-muted) !important;
-    color: var(--primary-dark-blue) !important;
-  }
-  
-  .input-soft-bg {
-    background-color: whitesmoke !important;
-    border: none !important;
-  }
   </style>
   

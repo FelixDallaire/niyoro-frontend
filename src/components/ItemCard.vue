@@ -1,13 +1,17 @@
 <template>
-  <div class="col">
+  <div class="col-12 col-md-6 col-lg-4 mb-4">
     <div class="card h-100 shadow-sm">
+      <!-- Header de la carte -->
       <div class="card-header bg-white border-bottom d-flex align-items-start justify-content-between">
         <div class="flex-grow-1">
           <h5 class="card-title mb-0">
-            <a v-if="item.url" :href="item.url" target="_blank" rel="noopener noreferrer" class="link-dark text-decoration-none">
+            <a v-if="item.url" :href="item.url" target="_blank" rel="noopener noreferrer"
+              class="link-dark text-decoration-none">
               {{ item.title }}
             </a>
-            <span v-else>{{ item.title }}</span>
+            <span v-else>
+              {{ item.title }}
+            </span>
           </h5>
         </div>
         <div class="ms-2">
@@ -16,15 +20,17 @@
         </div>
       </div>
 
+      <!-- Corps de la carte -->
       <div class="card-body">
-        <pre v-if="isCodeContent" class="code-wrapper">
-          <code ref="codeBlock">{{ item.content }}</code>
-        </pre>
-        <p v-else class="card-text truncate-multiline">
-          {{ item.content }}
-        </p>
+        <div class=" mb-3">
+          <pre class="mb-0 content-wrapper">
+            <code ref="codeBlock">
+              {{ item.content }}
+            </code>
+          </pre>
+        </div>
 
-        <div class="mt-3">
+        <div class="tags-container">
           <span v-for="tagId in item.tags" :key="tagId">
             <a :href="'/tags/' + tagId" class="badge me-1 text-decoration-none">
               {{ getTagName(tagId) }}
@@ -33,24 +39,36 @@
         </div>
       </div>
 
+      <!-- Footer de la carte -->
       <div class="card-footer bg-white border-top d-flex justify-content-between align-items-center">
         <div v-if="isCreatedByUser">
-          <button @click="togglePin(item)" class="btn btn-secondary btn-sm me-2" :title="item.sticky ? 'Désépingler' : 'Épingler'">
+          <button @click="togglePin(item)" class="btn btn-secondary btn-sm me-2"
+            :title="item.sticky ? 'Désépingler' : 'Épingler'">
             <i :class="item.sticky ? 'bi bi-pin-fill' : 'bi bi-pin-angle-fill pinned'"></i>
           </button>
         </div>
 
-        <a :href="'/item/' + item.permalink" class="btn btn-secondary btn-sm d-flex align-items-center justify-content-center">
+        <a :href="'/item/' + item.permalink"
+          class="btn btn-secondary btn-sm d-flex align-items-center justify-content-center">
           <i class="bi bi-info-circle-fill"></i>
         </a>
 
         <div v-if="isCreatedByUser" class="dropdown ms-2">
-          <button class="btn btn-secondary btn-sm" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+          <button class="btn btn-secondary btn-sm" type="button" id="dropdownMenuButton"
+            data-bs-toggle="dropdown" aria-expanded="false">
             <i class="bi bi-gear-fill"></i>
           </button>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-            <li><a class="dropdown-item" @click.prevent="editItem(item)" href="#">Modifier</a></li>
-            <li><a class="dropdown-item text-danger" @click.prevent="deleteItem(item)" href="#">Supprimer</a></li>
+            <li>
+              <a class="dropdown-item" @click.prevent="editItem(item)" href="#">
+                Modifier
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item text-danger" @click.prevent="deleteItem(item)" href="#">
+                Supprimer
+              </a>
+            </li>
           </ul>
         </div>
       </div>
@@ -64,7 +82,7 @@ import 'highlight.js/styles/grayscale.css';
 import { useTagStore } from '@/stores/tagStore';
 import { useUserStore } from '@/stores/userStore';
 import { useItemStore } from '@/stores/itemStore';
-import { onMounted, computed } from 'vue';
+import { onMounted, computed, ref, watch } from 'vue';
 
 export default {
   name: 'ItemCard',
@@ -78,32 +96,45 @@ export default {
     const tagStore = useTagStore();
     const userStore = useUserStore();
     const itemStore = useItemStore();
+    const codeBlock = ref(null);
 
     onMounted(() => {
       if (!tagStore.tags.length) {
         tagStore.loadAllTags();
       }
+      highlightCode();
     });
+
+    watch(
+      () => props.item.content,
+      () => {
+        highlightCode();
+      }
+    );
 
     const isCreatedByUser = computed(() => {
       return props.item.created_by === userStore.currentUser?._id;
     });
 
-    return { tagStore, isCreatedByUser, itemStore };
-  },
-  computed: {
-    isCodeContent() {
-      const codeIndicators = /[{};<>]/;
-      return codeIndicators.test(this.item.content);
-    },
+    function highlightCode() {
+      if (codeBlock.value) {
+        if (codeBlock.value.dataset.highlighted) {
+          delete codeBlock.value.dataset.highlighted;
+        }
+        hljs.highlightElement(codeBlock.value);
+        codeBlock.value.dataset.highlighted = 'yes';
+      }
+    }
+
+    return {
+      tagStore,
+      isCreatedByUser,
+      itemStore,
+      codeBlock,
+      highlightCode,
+    };
   },
   methods: {
-    highlightCode() {
-      if (this.isCodeContent) {
-        const codeBlock = this.$refs.codeBlock;
-        hljs.highlightBlock(codeBlock);
-      }
-    },
     getTagName(tagId) {
       const tag = this.tagStore.getTagById(tagId);
       return tag ? tag.name : 'Unknown';
@@ -118,11 +149,15 @@ export default {
       this.itemStore.removeItem(item._id);
     },
   },
-  mounted() {
-    this.highlightCode();
-  },
-  updated() {
-    this.highlightCode();
-  },
 };
 </script>
+
+<style scoped>
+.content-wrapper {
+  /* word-break: break-word;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  overflow-x: auto; */
+  white-space: normal;
+}
+</style>

@@ -10,6 +10,7 @@ import {
 export const useTagStore = defineStore('tagStore', {
   state: () => ({
     tags: [],
+    tagsById: {},
     selectedTag: null,
     loading: false,
     error: null,
@@ -20,6 +21,11 @@ export const useTagStore = defineStore('tagStore', {
       try {
         const response = await getAllTags();
         this.tags = response.data;
+
+        this.tagsById = {};
+        this.tags.forEach((tag) => {
+          this.tagsById[tag._id] = tag;
+        });
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -31,6 +37,8 @@ export const useTagStore = defineStore('tagStore', {
       try {
         const response = await getTagById(tagId);
         this.selectedTag = response.data;
+
+        this.tagsById[tagId] = response.data;
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -42,6 +50,7 @@ export const useTagStore = defineStore('tagStore', {
       try {
         const response = await createTag(tagData);
         this.tags.push(response.data);
+        this.tagsById[response.data._id] = response.data;
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -59,6 +68,7 @@ export const useTagStore = defineStore('tagStore', {
         if (this.selectedTag && this.selectedTag._id === tagId) {
           this.selectedTag = response.data;
         }
+        this.tagsById[tagId] = response.data;
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -70,6 +80,7 @@ export const useTagStore = defineStore('tagStore', {
       try {
         await deleteTag(tagId);
         this.tags = this.tags.filter((tag) => tag._id !== tagId);
+        delete this.tagsById[tagId];
         if (this.selectedTag && this.selectedTag._id === tagId) {
           this.selectedTag = null;
         }
@@ -81,8 +92,8 @@ export const useTagStore = defineStore('tagStore', {
     },
   },
   getters: {
-    getTagByName: (state) => (name) => {
-      return state.tags.find((tag) => tag.name === name);
+    getTagById: (state) => (tagId) => {
+      return state.tagsById[tagId] || null;
     },
   },
 });

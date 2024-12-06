@@ -128,3 +128,30 @@ body {
 h2 {
   color: var(--dark-blue-lighter) !important;
 }
+
+.bi {
+  color: var(--primary-dark-blue); 
+}
+
+.bi-lock-fill {
+  color: var(--danger-red);
+}
+
+.bi-globe {
+  color: var(--info-blue);
+}
+
+/* .bi:hover {
+  color: var(--hover-state-color);
+} */
+
+/* Styles pour les badges */
+.badge {
+  background-color: var(--primary-light-blue) !important;
+  color: var(--dark-blue-lighter) !important;
+}
+
+.badge:hover {
+  background-color: var(--primary-light-blue) !important;
+  color: var(--soft-white-light) !important;
+}

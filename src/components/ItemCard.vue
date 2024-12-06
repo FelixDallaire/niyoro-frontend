@@ -1,46 +1,53 @@
 <template>
   <div class="col">
-    <div class="card shadow-sm h-100 d-flex flex-column">
-      <div class="card-body flex-grow-1 d-flex flex-column">
-        <h5 class="card-title">
-          <a :href="item.url" target="_blank" rel="noopener noreferrer" class="text-decoration-none link-primary">
-            {{ item.title }}
-          </a>
-        </h5>
-        <p class="card-text flex-grow-1" v-if="item.content">{{ item.content }}</p>
-        <div v-if="item.tags.length > 0" class="mb-3">
-          <span class="badge bg-info me-1" v-for="tag in item.tags" :key="tag">
-            <router-link :to="`/tags/${tag}`" class="text-light text-decoration-none">{{ tag }}</router-link>
+    <div class="card h-100 shadow-sm">
+      <div class="card-header bg-white border-bottom d-flex align-items-start justify-content-between">
+        <div class="flex-grow-1">
+          <h5 class="card-title mb-0">
+            <a v-if="item.url" :href="item.url" target="_blank" rel="noopener noreferrer" class="link-dark text-decoration-none">
+              {{ item.title }}
+            </a>
+            <span v-else>{{ item.title }}</span>
+          </h5>
+        </div>
+        <div class="ms-2">
+          <i v-if="item.private" class="bi bi-lock-fill" title="Private"></i>
+          <i v-else class="bi bi-globe" title="Public"></i>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <pre v-if="isCodeContent" class="code-wrapper">
+          <code ref="codeBlock">{{ item.content }}</code>
+        </pre>
+        <p v-else class="card-text truncate-multiline">
+          {{ item.content }}
+        </p>
+
+        <div class="mt-3">
+          <span v-for="tagId in item.tags" :key="tagId">
+            <a :href="'/tags/' + tagId" class="badge me-1 text-decoration-none">
+              {{ getTagName(tagId) }}
+            </a>
           </span>
         </div>
       </div>
-      <div class="card-footer d-flex justify-content-between align-items-center mt-auto">
-        <div class="d-flex align-items-center">
-          <span class="text-muted me-3">
-            Créé le {{ formattedDate }}
-          </span>
-          <button v-if="isOwner" @click="toggleSticky" class="btn btn-link p-0 me-3">
-            <i :class="stickyIconClass"></i>
-          </button>
-          <router-link v-if="isOwner" :to="`/edit/${item._id}`" class="btn btn-sm btn-outline-primary me-2">
-            Modifier <i class="bi-pencil-fill"></i>
-          </router-link>
-          <button v-if="isOwner" @click="removeItem" class="btn btn-sm btn-outline-danger">
-            Supprimer <i class="bi-trash-fill"></i>
-          </button>
-        </div>
-        <div>
-          <span :class="privacyIconClass" title="Privacy status"></span>
-        </div>
+
+      <div class="card-footer bg-white border-top d-flex justify-content-end">
+        <a :href="'/item/' + item.permalink" class="btn btn-outline-primary d-flex align-items-center justify-content-between">
+          View Details
+          <i class="bi bi-chevron-right ms-2"></i>
+        </a>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { computed } from 'vue';
-import { useItemStore } from '../stores/itemStore';
-import { useAuthStore } from '../stores/authStore';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/grayscale.css';
+import { useTagStore } from '@/stores/tagStore';
+import { onMounted } from 'vue';
 
 export default {
   name: 'ItemCard',
@@ -50,53 +57,64 @@ export default {
       required: true,
     },
   },
-  setup(props) {
-    const itemStore = useItemStore();
-    const authStore = useAuthStore();
+  setup() {
+    const tagStore = useTagStore();
 
-    const isOwner = computed(() => authStore.user?.userId === props.item.userId);
-
-    const formattedDate = computed(() => {
-      const date = new Date(props.item.createdAt);
-      return date.toLocaleDateString('fr-FR', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      });
+    onMounted(() => {
+      if (!tagStore.tags.length) {
+        tagStore.loadAllTags();
+      }
     });
 
-    const stickyIconClass = computed(() => 
-      props.item.sticky ? 'bi-pin-fill text-warning' : 'bi-pin text-secondary'
-    );
-
-    const privacyIconClass = computed(() =>
-      props.item.private ? 'bi-lock-fill text-danger' : 'bi-globe text-success'
-    );
-
-    const toggleSticky = async () => {
-      const updatedData = { ...props.item, sticky: !props.item.sticky };
-      await itemStore.editItem(props.item._id, updatedData);
-    };
-
-    const removeItem = async () => {
-      if (confirm("Voulez-vous vraiment supprimer cet item ?")) {
-        await itemStore.removeItem(props.item._id);
+    return { tagStore };
+  },
+  computed: {
+    isCodeContent() {
+      const codeIndicators = /[{};<>]/;
+      return codeIndicators.test(this.item.content);
+    },
+  },
+  methods: {
+    highlightCode() {
+      if (this.isCodeContent) {
+        const codeBlock = this.$refs.codeBlock;
+        hljs.highlightBlock(codeBlock);
       }
-    };
-
-    return {
-      isOwner,
-      formattedDate,
-      stickyIconClass,
-      privacyIconClass,
-      toggleSticky,
-      removeItem,
-    };
+    },
+    getTagName(tagId) {
+      const tag = this.tagStore.getTagById(tagId);
+      return tag ? tag.name : 'Unknown';
+    },
+  },
+  mounted() {
+    this.highlightCode();
+  },
+  updated() {
+    this.highlightCode();
   },
 };
 </script>
 
 <style scoped>
+.truncate-multiline {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+  line-clamp: 3;
+  box-orient: vertical;
+}
+
+.code-wrapper {
+  white-space: pre-wrap;
+  word-break: break-word;
+  background-color: #f9f9f9;
+  padding: 0.75rem;
+  border-radius: 0.25rem;
+  border: 1px solid #e1e4e8;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  overflow-x: auto;
+}
 </style>

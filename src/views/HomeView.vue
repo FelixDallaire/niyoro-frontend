@@ -36,7 +36,7 @@
       </div>
 
       <div class="row">
-        <ItemCard v-for="item in filteredItems" :key="item._id" :item="item" class="col-md-4 mb-4" />
+        <ItemCard v-for="item in filteredItems" :key="item._id" :item="item" :current-user="currentUser" class="col-md-4 mb-4" />
       </div>
     </div>
   </div>
@@ -44,7 +44,7 @@
 
 <script>
 import { useItemStore } from '../stores/itemStore';
-import { useAuthStore } from '../stores/authStore';
+import { useUserStore } from '../stores/userStore';
 import { onMounted, ref, computed, watch } from 'vue';
 import ItemCard from '../components/ItemCard.vue';
 import FilterToggle from '../components/FilterToggle.vue';
@@ -57,22 +57,23 @@ export default {
   },
   setup() {
     const itemStore = useItemStore();
-    const authStore = useAuthStore();
+    const userStore = useUserStore();
     const showMyItems = ref(false);
 
     onMounted(() => {
+      userStore.loadCurrentUser();
       itemStore.loadItems();
     });
 
     const items = computed(() => itemStore.items);
-    const loading = computed(() => itemStore.loading);
-    const error = computed(() => itemStore.error);
-    const isAuthenticated = computed(() => authStore.isAuthenticated);
+    const myItems = computed(() => itemStore.myItems);
+    const loading = computed(() => itemStore.loading || userStore.loading);
+    const error = computed(() => itemStore.error || userStore.error);
+    const isAuthenticated = computed(() => !!userStore.currentUser);
 
+    const currentUser = computed(() => userStore.currentUser);
     const showFilterSection = computed(() => isAuthenticated.value);
-
     const isItemsListEmpty = computed(() => filteredItems.value.length === 0);
-
     const isUnauthorized = computed(() => error.value && error.value.includes('401'));
 
     const filteredItems = computed(() => {
@@ -81,16 +82,17 @@ export default {
       }
 
       if (showMyItems.value) {
-        return itemStore.myItems;
+        return myItems.value;
       }
       return items.value;
     });
 
     watch(isAuthenticated, (newValue) => {
-      if (!newValue) {
+      if (newValue) {
         itemStore.loadItems();
-        showMyItems.value = false;
+        userStore.loadCurrentUser();
       }
+      showMyItems.value = false;
     });
 
     const handleCheckboxToggle = (value) => {
@@ -106,8 +108,10 @@ export default {
 
     return {
       items,
+      myItems,
       loading,
       error,
+      currentUser,
       showMyItems,
       filteredItems,
       handleCheckboxToggle,

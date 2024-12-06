@@ -59,6 +59,18 @@ body {
   color: var(--soft-white-light) !important;
 }
 
+.btn-secondary {
+  background-color: var(--soft-white-muted) !important;
+  border-color: var(--grey-medium) !important;
+  color: var(--dark-blue-lighter) !important;
+}
+
+.btn-secondary:hover {
+  background-color: var(--primary-soft-white) !important;
+  border-color: var(--soft-white-muted) !important;
+  color: var(--soft-white-muted) !important;
+}
+
 .btn-danger {
   background-color: var(--danger-red) !important;
   color: var(--soft-white-light) !important;
@@ -129,10 +141,6 @@ h2 {
   color: var(--dark-blue-lighter) !important;
 }
 
-.bi {
-  color: var(--primary-dark-blue); 
-}
-
 .bi-lock-fill {
   color: var(--danger-red);
 }
@@ -141,11 +149,7 @@ h2 {
   color: var(--info-blue);
 }
 
-/* .bi:hover {
-  color: var(--hover-state-color);
-} */
 
-/* Styles pour les badges */
 .badge {
   background-color: var(--primary-light-blue) !important;
   color: var(--dark-blue-lighter) !important;
@@ -154,4 +158,8 @@ h2 {
 .badge:hover {
   background-color: var(--primary-light-blue) !important;
   color: var(--soft-white-light) !important;
+}
+
+.pinned {
+  color: var(--warning-yellow);
 }

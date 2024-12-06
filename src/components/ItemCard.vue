@@ -33,11 +33,26 @@
         </div>
       </div>
 
-      <div class="card-footer bg-white border-top d-flex justify-content-end">
-        <a :href="'/item/' + item.permalink" class="btn btn-outline-primary d-flex align-items-center justify-content-between">
-          View Details
-          <i class="bi bi-chevron-right ms-2"></i>
+      <div class="card-footer bg-white border-top d-flex justify-content-between align-items-center">
+        <div v-if="isCreatedByUser">
+          <button @click="togglePin(item)" class="btn btn-secondary btn-sm me-2" :title="item.sticky ? 'Désépingler' : 'Épingler'">
+            <i :class="item.sticky ? 'bi bi-pin-fill' : 'bi bi-pin-angle-fill pinned'"></i>
+          </button>
+        </div>
+
+        <a :href="'/item/' + item.permalink" class="btn btn-secondary btn-sm d-flex align-items-center justify-content-center">
+          <i class="bi bi-info-circle-fill"></i>
         </a>
+
+        <div v-if="isCreatedByUser" class="dropdown ms-2">
+          <button class="btn btn-secondary btn-sm" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-gear-fill"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+            <li><a class="dropdown-item" @click.prevent="editItem(item)" href="#">Modifier</a></li>
+            <li><a class="dropdown-item text-danger" @click.prevent="deleteItem(item)" href="#">Supprimer</a></li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
@@ -47,7 +62,8 @@
 import hljs from 'highlight.js';
 import 'highlight.js/styles/grayscale.css';
 import { useTagStore } from '@/stores/tagStore';
-import { onMounted } from 'vue';
+import { useUserStore } from '@/stores/userStore';
+import { onMounted, computed } from 'vue';
 
 export default {
   name: 'ItemCard',
@@ -57,8 +73,9 @@ export default {
       required: true,
     },
   },
-  setup() {
+  setup(props) {
     const tagStore = useTagStore();
+    const userStore = useUserStore();
 
     onMounted(() => {
       if (!tagStore.tags.length) {
@@ -66,7 +83,11 @@ export default {
       }
     });
 
-    return { tagStore };
+    const isCreatedByUser = computed(() => {
+      return props.item.created_by === userStore.currentUser?._id;
+    });
+
+    return { tagStore, isCreatedByUser };
   },
   computed: {
     isCodeContent() {
@@ -84,6 +105,16 @@ export default {
     getTagName(tagId) {
       const tag = this.tagStore.getTagById(tagId);
       return tag ? tag.name : 'Unknown';
+    },
+    togglePin(item) {
+      item.sticky = !item.sticky;
+      console.log('Toggled pin status for item:', item);
+    },
+    editItem(item) {
+      console.log('Editing item:', item);
+    },
+    deleteItem(item) {
+      console.log('Deleting item:', item);
     },
   },
   mounted() {

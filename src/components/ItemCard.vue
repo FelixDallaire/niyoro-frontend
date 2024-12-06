@@ -23,7 +23,7 @@
       <!-- Corps de la carte -->
       <div class="card-body">
         <div class=" mb-3">
-          <pre class="mb-0 content-wrapper">
+          <pre class="mb-0 content-wrapper rounded">
             <code ref="codeBlock">
               {{ item.content }}
             </code>
@@ -78,7 +78,7 @@
 
 <script>
 import hljs from 'highlight.js';
-import 'highlight.js/styles/grayscale.css';
+import 'highlight.js/styles/paraiso-light.css';
 import { useTagStore } from '@/stores/tagStore';
 import { useUserStore } from '@/stores/userStore';
 import { useItemStore } from '@/stores/itemStore';
@@ -154,10 +154,6 @@ export default {
 
 <style scoped>
 .content-wrapper {
-  /* word-break: break-word;
-  font-size: 0.875rem;
-  line-height: 1.4;
-  overflow-x: auto; */
   white-space: normal;
 }
 </style>

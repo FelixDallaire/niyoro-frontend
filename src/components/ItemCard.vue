@@ -63,6 +63,7 @@ import hljs from 'highlight.js';
 import 'highlight.js/styles/grayscale.css';
 import { useTagStore } from '@/stores/tagStore';
 import { useUserStore } from '@/stores/userStore';
+import { useItemStore } from '@/stores/itemStore';
 import { onMounted, computed } from 'vue';
 
 export default {
@@ -76,6 +77,7 @@ export default {
   setup(props) {
     const tagStore = useTagStore();
     const userStore = useUserStore();
+    const itemStore = useItemStore();
 
     onMounted(() => {
       if (!tagStore.tags.length) {
@@ -87,7 +89,7 @@ export default {
       return props.item.created_by === userStore.currentUser?._id;
     });
 
-    return { tagStore, isCreatedByUser };
+    return { tagStore, isCreatedByUser, itemStore };
   },
   computed: {
     isCodeContent() {
@@ -107,14 +109,13 @@ export default {
       return tag ? tag.name : 'Unknown';
     },
     togglePin(item) {
-      item.sticky = !item.sticky;
-      console.log('Toggled pin status for item:', item);
+      this.itemStore.togglePin(item._id, item.sticky);
     },
     editItem(item) {
       console.log('Editing item:', item);
     },
     deleteItem(item) {
-      console.log('Deleting item:', item);
+      this.itemStore.removeItem(item._id);
     },
   },
   mounted() {
@@ -125,27 +126,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.truncate-multiline {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  word-break: break-word;
-  line-clamp: 3;
-  box-orient: vertical;
-}
-
-.code-wrapper {
-  white-space: pre-wrap;
-  word-break: break-word;
-  background-color: #f9f9f9;
-  padding: 0.75rem;
-  border-radius: 0.25rem;
-  border: 1px solid #e1e4e8;
-  font-size: 0.875rem;
-  line-height: 1.4;
-  overflow-x: auto;
-}
-</style>

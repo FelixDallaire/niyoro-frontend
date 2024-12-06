@@ -62,6 +62,13 @@ export const useItemStore = defineStore('itemStore', {
         }
       });
     },
+    async togglePin(itemId, currentStickyStatus) {
+      const updatedData = { sticky: !currentStickyStatus };
+      await this._handleRequest(() => updateItem(itemId, updatedData), (data) => {
+        this._updateItemList(this.items, itemId, data);
+        this._updateItemList(this.myItems, itemId, data);
+      });
+    },
     async _handleRequest(requestFn, successCallback) {
       this.loading = true;
       this.error = null;

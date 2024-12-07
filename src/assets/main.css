@@ -16,16 +16,16 @@
   --danger-red: #e53935;
   --info-blue: #29b6f6;
 
-  --btn-pin-base-yellow: #995c00;
-  --btn-pin-active-yellow: #cc7a00;
-
+  --btn-pin-base-yellow: #ffcc80;
+  --btn-pin-hover-yellow: #ffb74d;
+  --btn-pin-active-yellow: #ffa726;
 
   --grey-light: #f5f5f5;
   --grey-medium: #b0bec5;
   --grey-dark: #37474f;
 
   --active-state-color: #007bff;
-  --hover-state-color: #0056b3; 
+  --hover-state-color: #0056b3;
   --inactive-state-color: #b0bec5;
   --disabled-state-color: #e0e0e0;
 }
@@ -153,7 +153,6 @@ h2 {
   color: var(--info-blue);
 }
 
-
 .badge {
   background-color: var(--primary-light-blue) !important;
   color: var(--dark-blue-lighter) !important;
@@ -164,6 +163,40 @@ h2 {
   color: var(--soft-white-light) !important;
 }
 
-.pinned {
-  color: var(--btn-pin-active-yellow);
+/* Bouton Sticky */
+.btn-sticky {
+  background-color: var(--grey-light) !important; /* Normal non épinglé */
+  border-color: var(--grey-medium) !important;
+  color: var(--dark-blue-lighter) !important;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+/* État épinglé (propriétaire) */
+.btn-sticky.pinned {
+  background-color: var(--btn-pin-active-yellow) !important; /* Jaune foncé */
+  border-color: var(--btn-pin-active-yellow) !important;
+  color: var(--primary-dark-blue) !important;
+}
+
+/* État épinglé (non-propriétaire) */
+.btn-sticky.pinned.disabled,
+.btn-sticky.pinned:disabled {
+  background-color: var(--btn-pin-base-yellow) !important; /* Jaune pâle */
+  border-color: var(--btn-pin-base-yellow) !important;
+  color: var(--grey-medium) !important;
+}
+
+/* Non épinglé (propriétaire) */
+.btn-sticky:not(.pinned):not(:disabled) {
+  background-color: var(--primary-light-blue) !important; /* Bouton normal interactif */
+  border-color: var(--primary-light-blue) !important;
+  color: var(--primary-dark-blue) !important;
+}
+
+/* Non épinglé (non-propriétaire) */
+.btn-sticky:not(.pinned).disabled,
+.btn-sticky:not(.pinned):disabled {
+  background-color: var(--disabled-state-color) !important; /* Normal pâle désactivé */
+  border-color: var(--disabled-state-color) !important;
+  color: var(--grey-medium) !important;
 }

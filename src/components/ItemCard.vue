@@ -13,6 +13,16 @@
               {{ item.title }}
             </span>
           </h5>
+          <small class="text-muted">
+            Créé par
+            <router-link v-if="item.created_by?._id" :to="{ name: 'Profile', params: { id: item.created_by._id } }"
+              class="link-primary text-decoration-none">
+              {{ item.created_by?.username || 'Utilisateur inconnu' }}
+            </router-link>
+            <span v-else>
+              {{ item.created_by?.username || 'Utilisateur inconnu' }}
+            </span>
+          </small>
         </div>
         <div class="ms-2">
           <i v-if="item.private" class="bi bi-lock-fill" title="Private"></i>
@@ -22,7 +32,7 @@
 
       <!-- Corps de la carte -->
       <div class="card-body">
-        <div class=" mb-3">
+        <div class="mb-3">
           <pre class="mb-0 content-wrapper rounded">
             <code ref="codeBlock">
               {{ item.content }}
@@ -41,12 +51,13 @@
 
       <!-- Footer de la carte -->
       <div class="card-footer bg-white border-top d-flex justify-content-between align-items-center">
-        <div v-if="isCreatedByUser">
-          <button @click="togglePin(item)" class="btn btn-secondary btn-sm me-2"
-            :title="item.sticky ? 'Désépingler' : 'Épingler'">
-            <i :class="item.sticky ? 'bi bi-pin-fill' : 'bi bi-pin-angle-fill pinned'"></i>
-          </button>
-        </div>
+        <button
+          @click="togglePin(item)"
+          class="btn btn-secondary btn-sm me-2"
+          :disabled="!isCreatedByUser"
+          :title="isCreatedByUser ? (item.sticky ? 'Désépingler' : 'Épingler') : 'Seul le créateur peut modifier le Sticky'">
+          <i :class="item.sticky ? 'bi bi-pin-fill' : 'bi bi-pin-angle-fill pinned'"></i>
+        </button>
 
         <a :href="'/item/' + item.permalink"
           class="btn btn-secondary btn-sm d-flex align-items-center justify-content-center">
@@ -54,8 +65,8 @@
         </a>
 
         <div v-if="isCreatedByUser" class="dropdown ms-2">
-          <button class="btn btn-secondary btn-sm" type="button" id="dropdownMenuButton"
-            data-bs-toggle="dropdown" aria-expanded="false">
+          <button class="btn btn-secondary btn-sm" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown"
+            aria-expanded="false">
             <i class="bi bi-gear-fill"></i>
           </button>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
@@ -113,7 +124,7 @@ export default {
     );
 
     const isCreatedByUser = computed(() => {
-      return props.item.created_by === userStore.currentUser?._id;
+      return props.item.created_by?._id === userStore.currentUser?._id;
     });
 
     function highlightCode() {
@@ -140,7 +151,9 @@ export default {
       return tag ? tag.name : 'Unknown';
     },
     togglePin(item) {
-      this.itemStore.togglePin(item._id, item.sticky);
+      if (this.isCreatedByUser) {
+        this.itemStore.togglePin(item._id, item.sticky);
+      }
     },
     editItem(item) {
       console.log('Editing item:', item);

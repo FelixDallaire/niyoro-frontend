@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { login, signup, setAuthToken } from '../services/authService';
+import { useUserStore } from './userStore';
 
 export const useAuthStore = defineStore('authStore', {
   state: () => ({
@@ -31,6 +32,9 @@ export const useAuthStore = defineStore('authStore', {
         this.user = user;
 
         setAuthToken(token);
+
+        const userStore = useUserStore();
+        userStore.currentUser = user;
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -59,6 +63,9 @@ export const useAuthStore = defineStore('authStore', {
         this.user = user;
 
         setAuthToken(token);
+
+        const userStore = useUserStore();
+        userStore.currentUser = user;
       } catch (err) {
         this.error = err.message;
       } finally {
@@ -73,6 +80,9 @@ export const useAuthStore = defineStore('authStore', {
       this.user = null;
 
       setAuthToken(null);
+
+      const userStore = useUserStore();
+      userStore.currentUser = null;
     },
 
     refreshStateFromLocalStorage() {
@@ -81,6 +91,9 @@ export const useAuthStore = defineStore('authStore', {
 
       if (this.token) {
         setAuthToken(this.token);
+
+        const userStore = useUserStore();
+        userStore.currentUser = this.user;
       } else {
         setAuthToken(null);
       }

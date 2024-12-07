@@ -164,29 +164,34 @@ h2 {
 }
 
 .btn-sticky {
-  background-color: var(--grey-light) !important;
+  background-color: var(--soft-white-muted) !important;
   border-color: var(--grey-medium) !important;
   color: var(--dark-blue-lighter) !important;
-  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.btn-sticky:hover {
+  background-color: var(--primary-soft-white) !important;
+  border-color: var(--soft-white-muted) !important;
+  color: var(--soft-white-muted) !important;
 }
 
 .btn-sticky.pinned {
   background-color: var(--btn-pin-active-yellow) !important;
   border-color: var(--btn-pin-active-yellow) !important;
-  color: var(--primary-dark-blue) !important;
+  color: var(--soft-white-light) !important;
+}
+
+.btn-sticky.pinned:hover {
+  background-color: var(--btn-pin-base-yellow) !important;
+  border-color: var(--btn-pin-base-yellow) !important;
+  color: var(--soft-white-light) !important;
 }
 
 .btn-sticky.pinned.disabled,
 .btn-sticky.pinned:disabled {
   background-color: var(--btn-pin-base-yellow) !important;
   border-color: var(--btn-pin-base-yellow) !important;
-  color: var(--grey-medium) !important;
-}
-
-.btn-sticky:not(.pinned):not(:disabled) {
-  background-color: var(--primary-light-blue) !important;
-  border-color: var(--primary-light-blue) !important;
-  color: var(--primary-dark-blue) !important;
+  color: var(--soft-white-light) !important;
 }
 
 .btn-sticky:not(.pinned).disabled,

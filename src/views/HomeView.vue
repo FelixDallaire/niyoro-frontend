@@ -1,124 +1,76 @@
 <template>
   <div class="container mt-4">
+    <!-- Loading Spinner -->
     <div v-if="loading" class="text-center">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
 
-    <div v-else-if="isUnauthorized" class="d-flex justify-content-center align-items-center">
-      <div class="card unauthorized-card shadow-sm">
-        <div class="card-body text-center">
-          <h4 class="card-title mb-3">Accès Restreint</h4>
-          <p class="card-text">Veuillez vous connecter pour accéder à cette section.</p>
-          <div class="d-flex justify-content-center align-items-center gap-2 mt-3">
-            <router-link to="/login" class="btn btn-primary">Se connecter</router-link>
-            <span class="or-separator">ou</span>
-            <router-link to="/signup" class="btn btn-outline-primary">Inscription</router-link>
-          </div>
-        </div>
-      </div>
-    </div>
-
+    <!-- Error Message -->
     <div v-else-if="error" class="alert alert-danger text-center">
       {{ error }}
     </div>
 
+    <!-- Item List -->
     <div v-else>
-      <FilterToggle v-if="showFilterSection" :showMyItems="showMyItems" @update:showMyItems="handleCheckboxToggle" />
-
-      <div v-else>
-        <h1>Items</h1>
+      <div class="form-check mb-3">
+        <input type="checkbox" class="form-check-input" id="showMyItems" v-model="showMyItems" />
+        <label class="form-check-label" for="showMyItems">Afficher mes items</label>
       </div>
-
-      <div v-if="isItemsListEmpty" class="alert alert-info text-center">
-        Aucun item à afficher.
-      </div>
-
-      <div class="row">
-        <ItemCard v-for="item in filteredItems" :key="item._id" :item="item" :current-user="currentUser" class="col-md-4 mb-4" />
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div v-for="item in filteredItems" :key="item._id" class="col">
+          <ItemCard :item="item" :current-user="currentUser" />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
+
 <script>
-import { useItemStore } from '../stores/itemStore';
-import { useUserStore } from '../stores/userStore';
-import { onMounted, ref, computed, watch } from 'vue';
-import ItemCard from '../components/ItemCard.vue';
-import FilterToggle from '../components/FilterToggle.vue';
+import { onMounted, computed, ref } from "vue";
+import { useItemStore } from "@/stores/itemStore";
+import { useUserStore } from "@/stores/userStore";
+import ItemCard from "@/components/ItemCard.vue";
 
 export default {
-  name: 'HomeView',
+  name: "HomeView",
   components: {
     ItemCard,
-    FilterToggle,
   },
   setup() {
     const itemStore = useItemStore();
     const userStore = useUserStore();
     const showMyItems = ref(false);
 
-    onMounted(() => {
-      userStore.loadCurrentUser();
-      itemStore.loadItems();
-    });
-
-    const items = computed(() => itemStore.items);
-    const myItems = computed(() => itemStore.myItems);
-    const loading = computed(() => itemStore.loading || userStore.loading);
-    const error = computed(() => itemStore.error || userStore.error);
-    const isAuthenticated = computed(() => !!userStore.currentUser);
-
     const currentUser = computed(() => userStore.currentUser);
-    const showFilterSection = computed(() => isAuthenticated.value);
-    const isItemsListEmpty = computed(() => filteredItems.value.length === 0);
-    const isUnauthorized = computed(() => error.value && error.value.includes('401'));
+    const items = computed(() => itemStore.items);
+    const loading = computed(() => itemStore.loading);
+    const error = computed(() => itemStore.error);
 
     const filteredItems = computed(() => {
-      if (!isAuthenticated.value) {
-        return items.value.filter(item => !item.private);
-      }
-
-      if (showMyItems.value) {
-        return myItems.value;
-      }
-      return items.value;
+      return showMyItems.value
+        ? itemStore.myItems
+        : itemStore.items.filter((item) => !item.private || item.owner === currentUser.value?.userId);
     });
 
-    watch(isAuthenticated, (newValue) => {
-      if (newValue) {
+    onMounted(() => {
+      if (!items.value.length) {
         itemStore.loadItems();
-        userStore.loadCurrentUser();
       }
-      showMyItems.value = false;
+      if (userStore.currentUser) {
+        itemStore.loadMyItems();
+      }
     });
-
-    const handleCheckboxToggle = (value) => {
-      showMyItems.value = value;
-      if (isAuthenticated.value) {
-        if (showMyItems.value) {
-          itemStore.loadMyItems();
-        } else {
-          itemStore.loadItems();
-        }
-      }
-    };
 
     return {
       items,
-      myItems,
       loading,
       error,
-      currentUser,
       showMyItems,
       filteredItems,
-      handleCheckboxToggle,
-      isAuthenticated,
-      showFilterSection,
-      isItemsListEmpty,
-      isUnauthorized,
+      currentUser,
     };
   },
 };
@@ -126,49 +78,6 @@ export default {
 
 <style scoped>
 .container {
-  max-width: 800px;
-}
-
-.spinner-border {
-  width: 3rem;
-  height: 3rem;
-}
-
-.unauthorized-card {
-  background-color: var(--soft-white-light);
-  border: 1px solid var(--grey-medium);
-  max-width: 500px;
-  padding: 20px;
-  border-radius: 12px;
-}
-
-.unauthorized-card .card-title {
-  color: var(--primary-dark-blue);
-}
-
-.unauthorized-card .card-text {
-  color: var(--grey-dark);
-}
-
-.unauthorized-card .btn-primary {
-  background-color: var(--primary-light-blue);
-  border-color: var(--light-blue-muted);
-  color: var(--primary-dark-blue);
-}
-
-.unauthorized-card .btn-outline-primary {
-  border-color: var(--primary-light-blue);
-  color: var(--primary-light-blue);
-}
-
-.unauthorized-card .btn-outline-primary:hover,
-.unauthorized-card .btn-outline-primary:focus {
-  background-color: var(--primary-light-blue);
-  color: var(--soft-white-light);
-}
-
-.or-separator {
-  color: var(--primary-dark-blue);
-  font-weight: bold;
+  max-width: 1200px;
 }
 </style>

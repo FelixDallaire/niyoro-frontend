@@ -1,164 +1,107 @@
 <template>
-  <div class="col-12 col-md-6 col-lg-4 mb-4">
-    <div class="card h-100 shadow-sm">
-      <!-- Header de la carte -->
-      <div class="card-header bg-white border-bottom d-flex align-items-start justify-content-between">
-        <div class="flex-grow-1">
-          <h5 class="card-title mb-0">
-            <a v-if="item.url" :href="item.url" target="_blank" rel="noopener noreferrer"
-              class="link-dark text-decoration-none">
-              {{ item.title }}
-            </a>
-            <span v-else>
-              {{ item.title }}
-            </span>
-          </h5>
-          <small class="text-muted">
-            Créé par
-            <router-link v-if="item.created_by?._id" :to="{ name: 'Profile', params: { id: item.created_by._id } }"
-              class="link-primary text-decoration-none">
-              {{ item.created_by?.username || 'Utilisateur inconnu' }}
-            </router-link>
-            <span v-else>
-              {{ item.created_by?.username || 'Utilisateur inconnu' }}
-            </span>
-          </small>
-        </div>
-        <div class="ms-2">
-          <i v-if="item.private" class="bi bi-lock-fill" title="Private"></i>
-          <i v-else class="bi bi-globe" title="Public"></i>
-        </div>
+  <div class="card shadow-sm h-100">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <div>
+        <h5 class="card-title mb-0">{{ item.title }}</h5>
+        <small class="text-muted">Créé par : {{ item.created_by.username }}</small>
       </div>
+      <i :class="item.private ? 'bi bi-lock-fill' : 'bi bi-globe'" :title="item.private ? 'Privé' : 'Public'"></i>
+    </div>
 
-      <!-- Corps de la carte -->
-      <div class="card-body">
-        <div class="mb-3">
-          <pre class="mb-0 content-wrapper rounded">
-            <code ref="codeBlock">
-              {{ item.content }}
-            </code>
-          </pre>
-        </div>
+    <div class="card-body">
+      <pre class="content-wrapper rounded">
+        <code ref="codeBlock">{{ item.content }}</code>
+      </pre>
+    </div>
 
-        <div class="tags-container">
-          <span v-for="tagId in item.tags" :key="tagId">
-            <a :href="'/tags/' + tagId" class="badge me-1 text-decoration-none">
-              {{ getTagName(tagId) }}
-            </a>
-          </span>
-        </div>
-      </div>
+    <div class="card-footer d-flex justify-content-between align-items-center">
+      <button class="btn btn-sticky btn-sm" :class="{ pinned: item.sticky }"
+        :disabled="!isOwner && !currentUser.isAdmin" @click="toggleSticky"
+        :title="item.sticky ? 'Désépingler' : 'Épingler'">
+        <i :class="item.sticky ? 'bi bi-pin-fill' : 'bi bi-pin-angle-fill'"></i>
+      </button>
 
-      <!-- Footer de la carte -->
-      <div class="card-footer bg-white border-top d-flex justify-content-between align-items-center">
-        <button @click="togglePin(item)" class="btn btn-sticky btn-sm me-2" :class="{ pinned: item.sticky }"
-          :disabled="!isCreatedByUser"
-          :title="isCreatedByUser ? (item.sticky ? 'Désépingler' : 'Épingler') : 'Seul le créateur peut modifier le Sticky'">
-          <i :class="item.sticky ? 'bi bi-pin-fill' : 'bi bi-pin-angle-fill'"></i>
+      <button class="btn btn-secondary btn-sm" :title="'Voir les détails de l’item'" @click="viewDetails">
+        <i class="bi bi-info-circle-fill"></i>
+      </button>
+
+      <div v-if="isOwner" class="dropdown">
+        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton"
+          data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-gear-fill"></i>
         </button>
-
-
-        <a :href="'/item/' + item.permalink"
-          class="btn btn-secondary btn-sm d-flex align-items-center justify-content-center">
-          <i class="bi bi-info-circle-fill"></i>
-        </a>
-
-        <div v-if="isCreatedByUser" class="dropdown ms-2">
-          <button class="btn btn-secondary btn-sm" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown"
-            aria-expanded="false">
-            <i class="bi bi-gear-fill"></i>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-            <li>
-              <a class="dropdown-item" @click.prevent="editItem(item)" href="#">
-                Modifier
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item text-danger" @click.prevent="deleteItem(item)" href="#">
-                Supprimer
-              </a>
-            </li>
-          </ul>
-        </div>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+          <li>
+            <button class="dropdown-item" @click="editItem">
+              <i class="bi bi-pencil-fill me-2"></i> Éditer
+            </button>
+          </li>
+          <li>
+            <button class="dropdown-item text-danger" @click="deleteItem">
+              <i class="bi bi-trash-fill me-2"></i> Supprimer
+            </button>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import hljs from 'highlight.js';
-import 'highlight.js/styles/paraiso-light.css';
-import { useTagStore } from '@/stores/tagStore';
-import { useUserStore } from '@/stores/userStore';
-import { useItemStore } from '@/stores/itemStore';
-import { onMounted, computed, ref, watch } from 'vue';
+import hljs from "highlight.js";
+import "highlight.js/styles/paraiso-light.css";
+import { useItemStore } from "@/stores/itemStore";
 
 export default {
-  name: 'ItemCard',
+  name: "ItemCard",
   props: {
     item: {
       type: Object,
       required: true,
     },
+    currentUser: {
+      type: Object,
+      required: true,
+    },
   },
-  setup(props) {
-    const tagStore = useTagStore();
-    const userStore = useUserStore();
-    const itemStore = useItemStore();
-    const codeBlock = ref(null);
-
-    onMounted(() => {
-      if (!tagStore.tags.length) {
-        tagStore.loadAllTags();
-      }
-      highlightCode();
-    });
-
-    watch(
-      () => props.item.content,
-      () => {
-        highlightCode();
-      }
-    );
-
-    const isCreatedByUser = computed(() => {
-      return props.item.created_by?._id === userStore.currentUser?._id;
-    });
-
-    function highlightCode() {
-      if (codeBlock.value) {
-        if (codeBlock.value.dataset.highlighted) {
-          delete codeBlock.value.dataset.highlighted;
-        }
-        hljs.highlightElement(codeBlock.value);
-        codeBlock.value.dataset.highlighted = 'yes';
-      }
-    }
-
+  data() {
     return {
-      tagStore,
-      isCreatedByUser,
-      itemStore,
-      codeBlock,
-      highlightCode,
+      codeBlock: null,
     };
   },
-  methods: {
-    getTagName(tagId) {
-      const tag = this.tagStore.getTagById(tagId);
-      return tag ? tag.name : 'Unknown';
+  computed: {
+    isOwner() {
+      return this.currentUser?.userId === this.item?.created_by?._id;
     },
-    togglePin(item) {
-      if (this.isCreatedByUser) {
-        this.itemStore.togglePin(item._id, item.sticky);
+  },
+  methods: {
+    highlightCode() {
+      if (this.codeBlock) {
+        if (this.codeBlock.dataset.highlighted) {
+          delete this.codeBlock.dataset.highlighted;
+        }
+        hljs.highlightElement(this.codeBlock);
+        this.codeBlock.dataset.highlighted = "yes";
       }
     },
-    editItem(item) {
-      console.log('Editing item:', item);
+    async toggleSticky() {
+      const itemStore = useItemStore();
+      await itemStore.togglePin(this.item._id, this.item.sticky);
     },
-    deleteItem(item) {
-      this.itemStore.removeItem(item._id);
+    viewDetails() { },
+    editItem() { },
+    deleteItem() {
+      const itemStore = useItemStore();
+      itemStore.removeItem(this.item._id);
+    },
+  },
+  mounted() {
+    this.codeBlock = this.$refs.codeBlock;
+    this.highlightCode();
+  },
+  watch: {
+    "item.content": function () {
+      this.highlightCode();
     },
   },
 };
@@ -166,6 +109,8 @@ export default {
 
 <style scoped>
 .content-wrapper {
-  white-space: normal;
+  white-space: pre-wrap;
+  background-color: #f8f9fa;
+  padding: 0.5rem;
 }
 </style>

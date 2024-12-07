@@ -163,40 +163,35 @@ h2 {
   color: var(--soft-white-light) !important;
 }
 
-/* Bouton Sticky */
 .btn-sticky {
-  background-color: var(--grey-light) !important; /* Normal non épinglé */
+  background-color: var(--grey-light) !important;
   border-color: var(--grey-medium) !important;
   color: var(--dark-blue-lighter) !important;
   transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
-/* État épinglé (propriétaire) */
 .btn-sticky.pinned {
-  background-color: var(--btn-pin-active-yellow) !important; /* Jaune foncé */
+  background-color: var(--btn-pin-active-yellow) !important;
   border-color: var(--btn-pin-active-yellow) !important;
   color: var(--primary-dark-blue) !important;
 }
 
-/* État épinglé (non-propriétaire) */
 .btn-sticky.pinned.disabled,
 .btn-sticky.pinned:disabled {
-  background-color: var(--btn-pin-base-yellow) !important; /* Jaune pâle */
+  background-color: var(--btn-pin-base-yellow) !important;
   border-color: var(--btn-pin-base-yellow) !important;
   color: var(--grey-medium) !important;
 }
 
-/* Non épinglé (propriétaire) */
 .btn-sticky:not(.pinned):not(:disabled) {
-  background-color: var(--primary-light-blue) !important; /* Bouton normal interactif */
+  background-color: var(--primary-light-blue) !important;
   border-color: var(--primary-light-blue) !important;
   color: var(--primary-dark-blue) !important;
 }
 
-/* Non épinglé (non-propriétaire) */
 .btn-sticky:not(.pinned).disabled,
 .btn-sticky:not(.pinned):disabled {
-  background-color: var(--disabled-state-color) !important; /* Normal pâle désactivé */
+  background-color: var(--disabled-state-color) !important;
   border-color: var(--disabled-state-color) !important;
   color: var(--grey-medium) !important;
 }

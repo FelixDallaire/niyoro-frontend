@@ -51,13 +51,12 @@
 
       <!-- Footer de la carte -->
       <div class="card-footer bg-white border-top d-flex justify-content-between align-items-center">
-        <button
-          @click="togglePin(item)"
-          class="btn btn-secondary btn-sm me-2"
+        <button @click="togglePin(item)" class="btn btn-sticky btn-sm me-2" :class="{ pinned: item.sticky }"
           :disabled="!isCreatedByUser"
           :title="isCreatedByUser ? (item.sticky ? 'Désépingler' : 'Épingler') : 'Seul le créateur peut modifier le Sticky'">
-          <i :class="item.sticky ? 'bi bi-pin-fill' : 'bi bi-pin-angle-fill pinned'"></i>
+          <i :class="item.sticky ? 'bi bi-pin-fill' : 'bi bi-pin-angle-fill'"></i>
         </button>
+
 
         <a :href="'/item/' + item.permalink"
           class="btn btn-secondary btn-sm d-flex align-items-center justify-content-center">

@@ -15,10 +15,18 @@
     </div>
 
     <div class="card-body">
-      <code ref="codeBlock" class="highlighted rounded p-3"></code>
+      <code
+        v-if="item.content"
+        ref="codeBlock"
+        class="highlighted rounded p-3"
+      ></code>
 
-      <div class="mt-3">
-        <span v-for="tagId in item.tags" :key="tagId" class="badge me-1 text-decoration-none">
+      <div v-if="item.tags.length" class="mt-3">
+        <span
+          v-for="tagId in item.tags"
+          :key="tagId"
+          class="badge me-1 text-decoration-none"
+        >
           {{ getTagName(tagId) }}
         </span>
       </div>
@@ -110,11 +118,17 @@ export default {
       const itemStore = useItemStore();
       await itemStore.togglePin(this.item._id, this.item.sticky);
     },
-    viewDetails() { },
-    editItem() { },
+    viewDetails() {
+      this.$router.push({ name: "ItemDetail", params: { id: this.item._id } });
+    },
+    editItem() {
+      this.$router.push({ name: "AddItem", params: { id: this.item._id } });
+    },
     deleteItem() {
       const itemStore = useItemStore();
-      itemStore.removeItem(this.item._id);
+      if (confirm("Êtes-vous sûr de vouloir supprimer cet item ?")) {
+        itemStore.removeItem(this.item._id);
+      }
     },
     getTagName(tagId) {
       const tagStore = useTagStore();

@@ -3,7 +3,13 @@
     <div class="card-header d-flex justify-content-between align-items-center">
       <div>
         <h5 class="card-title mb-0">{{ item.title }}</h5>
-        <small class="text-muted">Créé par : {{ item.created_by.username }}</small>
+        <small class="text-muted">
+          Par
+          <router-link :to="{ name: 'Profile', params: { id: item.created_by._id } }" class="text-decoration-none">
+            {{ item.created_by.username }}
+          </router-link>
+          • {{ formattedCreatedAt }}
+        </small>
       </div>
       <i :class="item.private ? 'bi bi-lock-fill' : 'bi bi-globe'" :title="item.private ? 'Privé' : 'Public'"></i>
     </div>
@@ -12,7 +18,7 @@
       <code ref="codeBlock" class="highlighted rounded p-3"></code>
 
       <div class="mt-3">
-        <span v-for="tagId in item.tags" :key="tagId" class="badge me-1">
+        <span v-for="tagId in item.tags" :key="tagId" class="badge me-1 text-decoration-none">
           {{ getTagName(tagId) }}
         </span>
       </div>
@@ -78,6 +84,16 @@ export default {
     isOwner() {
       return this.currentUser?.userId === this.item?.created_by?._id;
     },
+    formattedCreatedAt() {
+      const options = {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      };
+      return new Date(this.item.createdAt).toLocaleDateString("fr-FR", options).replace(":", "h");
+    },
   },
   methods: {
     highlightCode() {
@@ -94,12 +110,8 @@ export default {
       const itemStore = useItemStore();
       await itemStore.togglePin(this.item._id, this.item.sticky);
     },
-    viewDetails() {
-      console.log(`[INFO] Viewing details for item ID: ${this.item._id}`);
-    },
-    editItem() {
-      console.log(`[INFO] Editing item ID: ${this.item._id}`);
-    },
+    viewDetails() { },
+    editItem() { },
     deleteItem() {
       const itemStore = useItemStore();
       itemStore.removeItem(this.item._id);

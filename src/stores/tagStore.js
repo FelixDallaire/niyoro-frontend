@@ -26,6 +26,7 @@ export const useTagStore = defineStore('tagStore', {
         this.tags.forEach((tag) => {
           this.tagsById[tag._id] = tag;
         });
+
       } catch (err) {
         this.error = err.message;
       } finally {

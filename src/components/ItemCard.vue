@@ -9,7 +9,13 @@
     </div>
 
     <div class="card-body">
-      <code ref="codeBlock" class="highlighted rounded"></code>
+      <code ref="codeBlock" class="highlighted rounded p-3"></code>
+
+      <div class="mt-3">
+        <span v-for="tagId in item.tags" :key="tagId" class="badge me-1">
+          {{ getTagName(tagId) }}
+        </span>
+      </div>
     </div>
 
     <div class="card-footer d-flex justify-content-between align-items-center">
@@ -49,6 +55,7 @@
 import hljs from "highlight.js";
 import "highlight.js/styles/paraiso-light.css";
 import { useItemStore } from "@/stores/itemStore";
+import { useTagStore } from "@/stores/tagStore";
 
 export default {
   name: "ItemCard",
@@ -87,11 +94,20 @@ export default {
       const itemStore = useItemStore();
       await itemStore.togglePin(this.item._id, this.item.sticky);
     },
-    viewDetails() {},
-    editItem() {},
+    viewDetails() {
+      console.log(`[INFO] Viewing details for item ID: ${this.item._id}`);
+    },
+    editItem() {
+      console.log(`[INFO] Editing item ID: ${this.item._id}`);
+    },
     deleteItem() {
       const itemStore = useItemStore();
       itemStore.removeItem(this.item._id);
+    },
+    getTagName(tagId) {
+      const tagStore = useTagStore();
+      const tag = tagStore.getTagById(tagId);
+      return tag ? tag.name : "Tag inconnu";
     },
   },
   mounted() {
@@ -110,6 +126,5 @@ export default {
 .highlighted {
   display: block;
   white-space: pre-wrap;
-  padding: 1rem;
 }
 </style>

@@ -1,18 +1,15 @@
 <template>
   <div class="container mt-4">
-    <!-- Loading Spinner -->
     <div v-if="loading" class="text-center">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
 
-    <!-- Error Message -->
     <div v-else-if="error" class="alert alert-danger text-center">
       {{ error }}
     </div>
 
-    <!-- Item List -->
     <div v-else>
       <div class="form-check mb-3 d-flex justify-content-end">
         <input type="checkbox" class="form-check-input me-1" id="showMyItems" v-model="showMyItems" />
@@ -27,11 +24,11 @@
   </div>
 </template>
 
-
 <script>
 import { onMounted, computed, ref } from "vue";
 import { useItemStore } from "@/stores/itemStore";
 import { useUserStore } from "@/stores/userStore";
+import { useTagStore } from "@/stores/tagStore";
 import ItemCard from "@/components/ItemCard.vue";
 
 export default {
@@ -42,12 +39,13 @@ export default {
   setup() {
     const itemStore = useItemStore();
     const userStore = useUserStore();
+    const tagStore = useTagStore();
     const showMyItems = ref(false);
 
     const currentUser = computed(() => userStore.currentUser);
     const items = computed(() => itemStore.items);
-    const loading = computed(() => itemStore.loading);
-    const error = computed(() => itemStore.error);
+    const loading = computed(() => itemStore.loading || tagStore.loading);
+    const error = computed(() => itemStore.error || tagStore.error);
 
     const filteredItems = computed(() => {
       return showMyItems.value
@@ -61,6 +59,9 @@ export default {
       }
       if (userStore.currentUser) {
         itemStore.loadMyItems();
+      }
+      if (!tagStore.tags.length) {
+        tagStore.loadAllTags();
       }
     });
 
@@ -77,7 +78,4 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  max-width: 1200px;
-}
 </style>

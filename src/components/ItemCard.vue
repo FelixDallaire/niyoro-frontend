@@ -9,9 +9,7 @@
     </div>
 
     <div class="card-body">
-      <pre class="content-wrapper rounded">
-        <code ref="codeBlock">{{ item.content }}</code>
-      </pre>
+      <code ref="codeBlock" class="highlighted rounded"></code>
     </div>
 
     <div class="card-footer d-flex justify-content-between align-items-center">
@@ -80,6 +78,7 @@ export default {
         if (this.codeBlock.dataset.highlighted) {
           delete this.codeBlock.dataset.highlighted;
         }
+        this.codeBlock.textContent = this.item.content;
         hljs.highlightElement(this.codeBlock);
         this.codeBlock.dataset.highlighted = "yes";
       }
@@ -88,8 +87,8 @@ export default {
       const itemStore = useItemStore();
       await itemStore.togglePin(this.item._id, this.item.sticky);
     },
-    viewDetails() { },
-    editItem() { },
+    viewDetails() {},
+    editItem() {},
     deleteItem() {
       const itemStore = useItemStore();
       itemStore.removeItem(this.item._id);
@@ -108,9 +107,9 @@ export default {
 </script>
 
 <style scoped>
-.content-wrapper {
+.highlighted {
+  display: block;
   white-space: pre-wrap;
-  background-color: #f8f9fa;
-  padding: 0.5rem;
+  padding: 1rem;
 }
 </style>

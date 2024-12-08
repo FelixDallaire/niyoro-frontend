@@ -14,8 +14,8 @@
 
     <!-- Item List -->
     <div v-else>
-      <div class="form-check mb-3">
-        <input type="checkbox" class="form-check-input" id="showMyItems" v-model="showMyItems" />
+      <div class="form-check mb-3 d-flex justify-content-end">
+        <input type="checkbox" class="form-check-input me-1" id="showMyItems" v-model="showMyItems" />
         <label class="form-check-label" for="showMyItems">Afficher mes items</label>
       </div>
       <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">

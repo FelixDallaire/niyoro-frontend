@@ -15,18 +15,10 @@
     </div>
 
     <div class="card-body">
-      <code
-        v-if="item.content"
-        ref="codeBlock"
-        class="highlighted rounded p-3"
-      ></code>
+      <code v-if="item.content" ref="codeBlock" class="highlighted rounded p-3"></code>
 
       <div v-if="item.tags.length" class="mt-3">
-        <span
-          v-for="tagId in item.tags"
-          :key="tagId"
-          class="badge me-1 text-decoration-none"
-        >
+        <span v-for="tagId in item.tags" :key="tagId" class="badge me-1 text-decoration-none">
           {{ getTagName(tagId) }}
         </span>
       </div>

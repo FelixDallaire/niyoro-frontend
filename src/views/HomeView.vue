@@ -48,21 +48,35 @@ export default {
     const error = computed(() => itemStore.error || tagStore.error);
 
     const filteredItems = computed(() => {
-      return showMyItems.value
+      let filtered = showMyItems.value
         ? itemStore.myItems
         : itemStore.items.filter((item) => !item.private || item.owner === currentUser.value?.userId);
+
+      return filtered.sort((a, b) => {
+        if (a.sticky !== b.sticky) {
+          return b.sticky - a.sticky;
+        }
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
     });
 
-    onMounted(() => {
+    const loadTags = async () => {
+      if (!tagStore.tags.length) {
+        await tagStore.loadAllTags();
+      } else {
+        const latestTags = await tagStore.loadAllTags();
+        tagStore.tags = [...new Set([...tagStore.tags, ...latestTags])];
+      }
+    };
+
+    onMounted(async () => {
       if (!items.value.length) {
-        itemStore.loadItems();
+        await itemStore.loadItems();
       }
       if (userStore.currentUser) {
-        itemStore.loadMyItems();
+        await itemStore.loadMyItems();
       }
-      if (!tagStore.tags.length) {
-        tagStore.loadAllTags();
-      }
+      await loadTags();
     });
 
     return {
@@ -77,5 +91,5 @@ export default {
 };
 </script>
 
-<style scoped>
-</style>
+
+<style scoped></style>

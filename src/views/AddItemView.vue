@@ -1,16 +1,18 @@
 <template>
   <div class="add-item-view container mt-4">
     <div class="rounded p-4 shadow-sm bg-white">
-      <h2 class="mb-4">Ajouter un nouvel item</h2>
-      <ItemForm @submit="createItem" />
+      <h2 class="mb-4">{{ isEditMode ? "Modifier l'item" : "Ajouter un nouvel item" }}</h2>
+      <ItemForm :initialData="initialData" :isEditMode="isEditMode" @submit="handleSubmit" />
     </div>
   </div>
 </template>
 
 <script>
-import ItemForm from "@/components/ItemForm.vue";
+import { ref, onMounted } from "vue";
 import { useItemStore } from "@/stores/itemStore";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
+import { useTagStore } from "@/stores/tagStore";
+import ItemForm from "@/components/ItemForm.vue";
 
 export default {
   name: "AddItemView",
@@ -19,25 +21,78 @@ export default {
   },
   setup() {
     const itemStore = useItemStore();
-    const router = useRouter(); 
+    const tagStore = useTagStore();
+    const router = useRouter();
+    const route = useRoute();
 
-    const createItem = async (formData) => {
-      console.log("[DEBUG] Form data received in createItem:", formData); 
+    const isEditMode = ref(route.name === "EditItem");
+
+    const initialData = ref({
+      title: "",
+      url: null,
+      content: "",
+      latitude: null,
+      longitude: null,
+      tagsInput: "",
+      private: false,
+      sticky: false,
+    });
+
+    const handleSubmit = async (formData) => {
       try {
-        const result = await itemStore.addItem(formData);
-        console.log("[DEBUG] Item successfully added:", result); 
+        if (isEditMode.value) {
+          // Edit mode
+          await itemStore.editItem(route.params.id, formData);
+          alert("Item modifié avec succès !");
+        } else {
+          // Add mode
+          await itemStore.addItem(formData);
+          alert("Item créé avec succès !");
+        }
 
-        alert("Item créé avec succès !");
-        
         router.push("/");
       } catch (error) {
-        console.error("[ERROR] Failed to create item:", error);
+        console.error("[ERROR] Échec de l'opération :", error);
         alert("Une erreur est survenue.");
       }
     };
 
+    onMounted(async () => {
+      if (isEditMode.value) {
+        try {
+          await itemStore.loadItem(route.params.id);
+          const item = itemStore.selectedItem;
+
+          if (!item) {
+            throw new Error("Item not found or could not be loaded.");
+          }
+
+          if (!tagStore.tags.length) {
+            await tagStore.loadAllTags();
+          }
+
+          const tagNames = item.tags
+            .map((tagId) => {
+              const tag = tagStore.getTagById(tagId);
+              return tag ? tag.name : null;
+            })
+            .filter((name) => name);
+
+          initialData.value = {
+            ...item,
+            tagsInput: tagNames.join(" "),
+          };
+        } catch (error) {
+          console.error("[ERROR] Impossible de charger l'item :", error);
+          alert("Une erreur est survenue.");
+        }
+      }
+    });
+
     return {
-      createItem,
+      initialData,
+      isEditMode,
+      handleSubmit,
     };
   },
 };

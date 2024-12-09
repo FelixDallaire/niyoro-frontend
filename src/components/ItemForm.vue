@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 export default {
   name: "ItemForm",
@@ -97,6 +97,14 @@ export default {
       longitude: true,
     });
 
+    watch(
+      () => props.initialData,
+      (newData) => {
+        formData.value = { ...newData };
+      },
+      { immediate: true }
+    );
+
     const validateField = (field) => {
       switch (field) {
         case "title":
@@ -104,17 +112,14 @@ export default {
             formData.value.title.trim().length > 0 &&
             formData.value.title.trim().length <= 100;
           break;
-
         case "url":
           isValid.value.url =
-            !formData.value.url || /^(http|https):\/\/[^ "]+$/.test(formData.value.url.trim());
+            !formData.value.url || /^(https?):\/\/[^\s$.?#].[^\s]*$/.test(formData.value.url.trim());
           break;
-
         case "latitude":
         case "longitude":
           validateCoordinates();
           break;
-
         default:
           break;
       }
@@ -147,7 +152,7 @@ export default {
       attemptedSubmit.value = true;
       validateForm();
 
-      if (!isValid.value.title || !isValid.value.latitude || !isValid.value.longitude) {
+      if (!Object.values(isValid.value).every((value) => value)) {
         return;
       }
 
@@ -168,6 +173,5 @@ export default {
   },
 };
 </script>
-
 
 <style scoped></style>

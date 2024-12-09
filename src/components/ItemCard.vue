@@ -114,7 +114,7 @@ export default {
       this.$router.push({ name: "ItemDetail", params: { id: this.item._id } });
     },
     editItem() {
-      this.$router.push({ name: "AddItem", params: { id: this.item._id } });
+      this.$router.push({ name: "EditItem", params: { id: this.item._id } });
     },
     deleteItem() {
       const itemStore = useItemStore();

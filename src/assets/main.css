@@ -117,11 +117,14 @@ body {
 }
 
 .avatar {
+  border-radius: 50%;
+  border: 3px solid var(--primary-light-blue) !important;
+}
+
+.nav-avatar {
   width: 45px;
   height: 45px;
-  border-radius: 50%;
   cursor: pointer;
-  border: 3px solid var(--primary-light-blue) !important;
 }
 
 .dropdown-menu {

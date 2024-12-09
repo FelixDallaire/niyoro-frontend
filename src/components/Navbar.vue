@@ -16,7 +16,7 @@
             <button class="btn btn-link p-0 border-0 dropdown-toggle-no-arrow" type="button" id="avatarDropdown"
               data-bs-toggle="dropdown" aria-expanded="false">
               <div class="avatar-border">
-                <img :src="userAvatar" alt="User Avatar" class="rounded-circle avatar img-thumbnail" />
+                <img :src="userAvatar" alt="User Avatar" class="rounded-circle avatar img-thumbnail nav-avatar border-3" />
               </div>
             </button>
             <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm" aria-labelledby="avatarDropdown">

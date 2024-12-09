@@ -41,11 +41,9 @@ export default {
     const handleSubmit = async (formData) => {
       try {
         if (isEditMode.value) {
-          // Edit mode
           await itemStore.editItem(route.params.id, formData);
           alert("Item modifié avec succès !");
         } else {
-          // Add mode
           await itemStore.addItem(formData);
           alert("Item créé avec succès !");
         }

@@ -84,6 +84,29 @@ async function checkItemOwnership(itemId, user, isAdmin) {
   }
 }
 
+async function checkProfileAccess(profileId, user) {
+  if (!profileId) {
+    return true;
+  }
+
+  try {
+    const profileResponse = await fetch(`/api/users/${profileId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+
+    if (!profileResponse.ok) {
+      throw new Error("Impossible de récupérer le profil.");
+    }
+
+    return true;
+  } catch (error) {
+    console.error("[ERROR] Problème lors de l'accès au profil:", error);
+    throw error;
+  }
+}
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
@@ -107,10 +130,15 @@ router.beforeEach(async (to, from, next) => {
       const itemId = to.params.id;
       await checkItemOwnership(itemId, user, isAdmin);
       next();
+    } else if (to.name === "Profile") {
+      const profileId = to.params.id;
+      await checkProfileAccess(profileId, user);
+      next();
     } else {
       next();
     }
   } catch (error) {
+    alert("Accès refusé ou problème de chargement.");
     next({ name: "Home" });
   }
 });

@@ -148,14 +148,9 @@ h2 {
   color: var(--dark-blue-lighter) !important;
 }
 
-.bi-lock-fill {
-  color: var(--danger-red);
+.bi-lock-fill, .bi-globe {
+  color: var(--light-blue-muted);
 }
-
-.bi-globe {
-  color: var(--info-blue);
-}
-
 .badge {
   background-color: var(--primary-light-blue) !important;
   color: var(--dark-blue-lighter) !important;

@@ -23,7 +23,7 @@
               <li>
                 <router-link class="dropdown-item" to="/profile">Profil</router-link>
               </li>
-              <li v-if="isAdmin">
+              <li v-if="is_admin">
                 <router-link class="dropdown-item" to="/tags">Tags</router-link>
               </li>
               <li>
@@ -61,7 +61,7 @@ export default {
     });
 
     const isAuthenticated = computed(() => authStore.isAuthenticated);
-    const isAdmin = computed(() => authStore.isAdmin);
+    const is_admin = computed(() => authStore.is_admin);
     const userAvatar = computed(() => authStore.user?.avatar);
 
     const logout = () => {
@@ -74,7 +74,7 @@ export default {
 
     return {
       isAuthenticated,
-      isAdmin,
+      is_admin,
       userAvatar,
       logout,
       isActive,

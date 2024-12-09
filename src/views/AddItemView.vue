@@ -78,6 +78,8 @@ export default {
 
           initialData.value = {
             ...item,
+            latitude: item.latitude ?? null,
+            longitude: item.longitude ?? null,
             tagsInput: tagNames.join(" "),
           };
         } catch (error) {

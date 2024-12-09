@@ -106,7 +106,7 @@ export const useUserStore = defineStore('userStore', {
     },
   },
   getters: {
-    isAdmin: (state) => {
+    is_admin: (state) => {
       return state.currentUser?.is_admin ?? false;
     },
   },

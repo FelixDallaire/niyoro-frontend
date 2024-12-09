@@ -15,14 +15,15 @@ export const useAuthStore = defineStore('authStore', {
       this.loading = true;
       try {
         const response = await signup(signupData);
-        const { token, userId, username, email, avatar, isAdmin } = response.data;
+
+        const { token, userId, username, email, avatar, is_admin } = response.data;
 
         const user = {
           userId,
           username,
           email,
           avatar,
-          isAdmin: isAdmin ?? false,
+          is_admin,
         };
 
         localStorage.setItem('authToken', token);
@@ -46,14 +47,15 @@ export const useAuthStore = defineStore('authStore', {
       this.loading = true;
       try {
         const response = await login(loginData);
-        const { token, userId, username, email, avatar, isAdmin } = response.data;
+
+        const { token, userId, username, email, avatar, is_admin } = response.data;
 
         const user = {
           userId,
           username,
           email,
           avatar,
-          isAdmin: isAdmin ?? false,
+          is_admin,
         };
 
         localStorage.setItem('authToken', token);
@@ -104,8 +106,8 @@ export const useAuthStore = defineStore('authStore', {
     isAuthenticated: (state) => {
       return !!state.token;
     },
-    isAdmin: (state) => {
-      return state.user?.isAdmin ?? false;
+    is_admin: (state) => {
+      return state.user?.is_admin ?? false;
     },
   },
 });

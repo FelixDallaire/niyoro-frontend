@@ -128,7 +128,7 @@ export default {
     const validateCoordinates = () => {
       const lat = formData.value.latitude;
       const lon = formData.value.longitude;
-
+debugger
       if (lat === null && lon === null) {
         isValid.value.latitude = true;
         isValid.value.longitude = true;

@@ -1,17 +1,27 @@
 <template>
   <div class="card shadow-sm h-100">
-    <div class="card-header d-flex justify-content-between align-items-center">
-      <div>
-        <h5 class="card-title mb-0">{{ item.title }}</h5>
+    <div class="card-header d-flex position-relative">
+      <div class="flex-grow-1 me-5">
+        <h5 class="card-title mb-0 text-wrap">{{ item.title }}</h5>
         <small class="text-muted">
-          Par
+          <i :class="item.private ? 'bi bi-lock-fill' : 'bi bi-globe'" :title="item.private ? 'Privé' : 'Public'"></i>
+          • Par
           <router-link :to="{ name: 'Profile', params: { id: item.created_by._id } }" class="text-decoration-none">
             {{ item.created_by.username }}
           </router-link>
           • {{ formattedCreatedAt }}
         </small>
       </div>
-      <i :class="item.private ? 'bi bi-lock-fill' : 'bi bi-globe'" :title="item.private ? 'Privé' : 'Public'"></i>
+      <button
+        class="btn btn-sticky btn-sm position-absolute top-0 end-0 m-2"
+        :class="{ pinned: item.sticky }"
+        :hidden="!isOwner && !currentUser.isAdmin && !item.sticky"
+        :disabled="!isOwner && !currentUser.isAdmin"
+        @click="toggleSticky"
+        :title="item.sticky ? 'Désépingler' : 'Épingler'"
+      >
+        <i :class="item.sticky ? 'bi bi-pin-fill' : 'bi bi-pin-angle-fill'"></i>
+      </button>
     </div>
 
     <div class="card-body">
@@ -25,12 +35,6 @@
     </div>
 
     <div class="card-footer d-flex justify-content-between align-items-center">
-      <button class="btn btn-sticky btn-sm" :class="{ pinned: item.sticky }"
-        :disabled="!isOwner && !currentUser.isAdmin" @click="toggleSticky"
-        :title="item.sticky ? 'Désépingler' : 'Épingler'">
-        <i :class="item.sticky ? 'bi bi-pin-fill' : 'bi bi-pin-angle-fill'"></i>
-      </button>
-
       <button class="btn btn-secondary btn-sm" :title="'Voir les détails de l’item'" @click="viewDetails">
         <i class="bi bi-info-circle-fill"></i>
       </button>
@@ -144,5 +148,17 @@ export default {
 .highlighted {
   display: block;
   white-space: pre-wrap;
+}
+
+.card-header .btn-sticky {
+  z-index: 1; /* Ensure it stays on top */
+}
+
+.card-header {
+  overflow: hidden; /* Ensure title and button layout don’t overlap */
+}
+
+.card-title {
+  word-break: break-word; /* Ensure long words wrap correctly */
 }
 </style>

@@ -14,51 +14,39 @@ const routes = [
   { path: "/signup", name: "Signup", component: SignupView },
   { path: "/login", name: "Login", component: LoginView },
   { path: "/", name: "Home", component: HomeView },
-  { path: "/add", name: "AddItem", component: AddItemView },
-  { path: "/edit/:id", name: "EditItem", component: AddItemView, props: true },
-  { path: "/item/:id", name: "ItemDetail", component: ItemDetailView, props: true },
-  { path: "/profile/:id?", name: "Profile", component: ProfileView, props: true },
-  { path: "/tags", name: "Tags", component: TagsView, meta: { requiresAdmin: true } },
+  {
+    path: "/add",
+    name: "AddItem",
+    component: AddItemView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/edit/:id",
+    name: "EditItem",
+    component: AddItemView,
+    props: true,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/item/:id",
+    name: "ItemDetail",
+    component: ItemDetailView,
+    props: true,
+  },
+  {
+    path: "/profile/:id?",
+    name: "Profile",
+    component: ProfileView,
+    props: true,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/tags",
+    name: "Tags",
+    component: TagsView,
+    meta: { requiresAdmin: true },
+  },
 ];
-
-async function checkItemOwnership(itemId, user, isAdmin, itemStore) {
-  try {
-    await itemStore.loadItem(itemId);
-    const item = itemStore.selectedItem;
-
-    if (!item) {
-      throw new Error("L'élément est introuvable.");
-    }
-
-    const creatorId = item.created_by._id;
-    console.log("User ID:", user.userId);
-    console.log("Creator ID:", creatorId);
-
-    if (creatorId !== user.userId && !isAdmin) {
-      throw new Error("Accès non autorisé");
-    }
-  } catch (error) {
-    console.error("[ERROR] Item Ownership Check:", error);
-    throw error;
-  }
-}
-
-async function checkProfileAccess(profileId, user) {
-  if (!profileId) return true;
-
-  try {
-    const response = await fetch(`/api/users/${profileId}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-      },
-    });
-
-    if (!response.ok) throw new Error("Impossible de récupérer le profil.");
-  } catch (error) {
-    console.error("[ERROR] Profile Access Check:", error);
-    throw error;
-  }
-}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -76,6 +64,14 @@ router.beforeEach(async (to, from, next) => {
     if (to.matched.some((record) => record.meta.requiresAdmin) && !isAdmin) {
       alert("Accès interdit : réservé aux administrateurs.");
       return next({ name: "Home" });
+    }
+
+    if (
+      to.matched.some((record) => record.meta.requiresAuth) &&
+      !isAuthenticated
+    ) {
+      alert("Veuillez vous connecter pour accéder à cette page.");
+      return next({ name: "Login" });
     }
 
     if ((to.name === "Signup" || to.name === "Login") && isAuthenticated) {

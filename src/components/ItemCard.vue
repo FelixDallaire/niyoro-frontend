@@ -12,16 +12,12 @@
           • {{ formattedCreatedAt }}
         </small>
       </div>
-      <button
-        class="btn btn-sticky btn-sm position-absolute top-0 end-0 m-2"
-        :class="{ pinned: item.sticky }"
-        :hidden="!isOwner && !currentUser.isAdmin && !item.sticky"
-        :disabled="!isOwner && !currentUser.isAdmin"
-        @click="toggleSticky"
-        :title="item.sticky ? 'Désépingler' : 'Épingler'"
-      >
-        <i :class="item.sticky ? 'bi bi-pin-fill' : 'bi bi-pin-angle-fill'"></i>
-      </button>
+      <PinButton
+        :sticky="item.sticky"
+        :isOwner="isOwner"
+        :isAdmin="currentUser.isAdmin"
+        @toggle-sticky="toggleSticky"
+      />
     </div>
 
     <div class="card-body">
@@ -39,24 +35,7 @@
         <i class="bi bi-info-circle-fill"></i>
       </button>
 
-      <div v-if="isOwner" class="dropdown">
-        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton"
-          data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="bi bi-gear-fill"></i>
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-          <li>
-            <button class="dropdown-item" @click="editItem">
-              <i class="bi bi-pencil-fill me-2"></i> Éditer
-            </button>
-          </li>
-          <li>
-            <button class="dropdown-item text-danger" @click="deleteItem">
-              <i class="bi bi-trash-fill me-2"></i> Supprimer
-            </button>
-          </li>
-        </ul>
-      </div>
+      <ItemDropdownMenu v-if="isOwner" :itemId="item._id" />
     </div>
   </div>
 </template>
@@ -66,6 +45,8 @@ import hljs from "highlight.js";
 import "highlight.js/styles/paraiso-light.css";
 import { useItemStore } from "@/stores/itemStore";
 import { useTagStore } from "@/stores/tagStore";
+import PinButton from "@/components/PinButton.vue";
+import ItemDropdownMenu from "@/components/ItemDropdownMenu.vue";
 
 export default {
   name: "ItemCard",
@@ -77,7 +58,7 @@ export default {
     currentUser: {
       type: Object,
       required: true,
-      default: () => ({})
+      default: () => ({}),
     },
   },
   data() {
@@ -116,16 +97,7 @@ export default {
       await itemStore.togglePin(this.item._id, this.item.sticky);
     },
     viewDetails() {
-      this.$router.push({ name: "ItemDetail", params: { id: this.item._id } });
-    },
-    editItem() {
-      this.$router.push({ name: "EditItem", params: { id: this.item._id } });
-    },
-    deleteItem() {
-      const itemStore = useItemStore();
-      if (confirm("Êtes-vous sûr de vouloir supprimer cet item ?")) {
-        itemStore.removeItem(this.item._id);
-      }
+      this.$router.push({ name: "ItemDetail", params: { id: this.item.permalien } });
     },
     getTagName(tagId) {
       const tagStore = useTagStore();
@@ -142,6 +114,10 @@ export default {
       this.highlightCode();
     },
   },
+  components: {
+    PinButton,
+    ItemDropdownMenu,
+  },
 };
 </script>
 
@@ -152,14 +128,14 @@ export default {
 }
 
 .card-header .btn-sticky {
-  z-index: 1; /* Ensure it stays on top */
+  z-index: 1;
 }
 
 .card-header {
-  overflow: hidden; /* Ensure title and button layout don’t overlap */
+  overflow: hidden;
 }
 
 .card-title {
-  word-break: break-word; /* Ensure long words wrap correctly */
+  word-break: break-word;
 }
 </style>

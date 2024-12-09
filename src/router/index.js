@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { useAuthStore } from "@/stores/authStore";
-import { useItemStore } from "@/stores/itemStore";
 
 import SignupView from "@/views/SignupView.vue";
 import LoginView from "@/views/LoginView.vue";
@@ -53,48 +52,26 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
-  const itemStore = useItemStore();
-  const user = authStore.user;
   const isAuthenticated = authStore.isAuthenticated;
   const isAdmin = authStore.isAdmin;
 
-  try {
-    if (to.matched.some((record) => record.meta.requiresAdmin) && !isAdmin) {
-      alert("Accès interdit : réservé aux administrateurs.");
-      return next({ name: "Home" });
-    }
-
-    if (
-      to.matched.some((record) => record.meta.requiresAuth) &&
-      !isAuthenticated
-    ) {
-      alert("Veuillez vous connecter pour accéder à cette page.");
-      return next({ name: "Login" });
-    }
-
-    if ((to.name === "Signup" || to.name === "Login") && isAuthenticated) {
-      return next({ name: "Home" });
-    }
-
-    if (to.name === "EditItem") {
-      const itemId = to.params.id;
-      if (!itemId) throw new Error("L'ID de l'élément est manquant.");
-      await checkItemOwnership(itemId, user, isAdmin, itemStore);
-    }
-
-    if (to.name === "Profile") {
-      const profileId = to.params.id;
-      if (profileId) await checkProfileAccess(profileId, user);
-    }
-
-    next();
-  } catch (error) {
-    console.error("[ERROR] Navigation Guard:", error.message);
-    alert(error.message || "Accès refusé ou problème de chargement.");
-    next({ name: "Home" });
+  if (to.matched.some((record) => record.meta.requiresAdmin) && !isAdmin) {
+    alert("Accès interdit : réservé aux administrateurs.");
+    return next({ name: "Home" });
   }
+
+  if (to.matched.some((record) => record.meta.requiresAuth) && !isAuthenticated) {
+    alert("Veuillez vous connecter pour accéder à cette page.");
+    return next({ name: "Login" });
+  }
+
+  if ((to.name === "Signup" || to.name === "Login") && isAuthenticated) {
+    return next({ name: "Home" });
+  }
+
+  next();
 });
 
 export default router;

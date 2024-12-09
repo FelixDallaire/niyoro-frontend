@@ -4,6 +4,7 @@ import {
   fetchMyItems,
   fetchItemsByUser,
   fetchItemById,
+  fetchItemByPermalink,
   createItem,
   updateItem,
   deleteItem,
@@ -43,9 +44,18 @@ export const useItemStore = defineStore("itemStore", {
       );
     },
 
-    async loadItem(itemId) {
+    async loadItemById(itemId) {
       await this._handleRequest(
         () => fetchItemById(itemId),
+        (data) => {
+          this.selectedItem = data;
+        }
+      );
+    },
+
+    async loadItemByPermalink(permalink) {
+      await this._handleRequest(
+        () => fetchItemByPermalink(permalink),
         (data) => {
           this.selectedItem = data;
         }
@@ -124,6 +134,8 @@ export const useItemStore = defineStore("itemStore", {
   getters: {
     getItemById: (state) => (itemId) =>
       state.items.find((item) => item._id === itemId),
+    getItemByPermalink: (state) => (permalink) =>
+      state.items.find((item) => item.permalink === permalink),
     publicItems: (state) => state.items.filter((item) => !item.private),
     stickyItems: (state) => state.items.filter((item) => item.sticky),
   },

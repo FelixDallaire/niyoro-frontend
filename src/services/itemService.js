@@ -17,6 +17,10 @@ export const fetchItemById = async (itemId) => {
   return await axios.get(`${apiBaseUrl}/items/${itemId}`);
 };
 
+export const fetchItemByPermalink = async (permalink) => {
+  return await axios.get(`${apiBaseUrl}/items/permalink/${permalink}`);
+};
+
 export const createItem = async (itemData) => {
   return await axios.post(`${apiBaseUrl}/items`, itemData);
 };

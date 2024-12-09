@@ -53,6 +53,10 @@ body {
   font-weight: bold !important;
 }
 
+.nav-username {
+  color: var(--primary-soft-white) !important;
+}
+
 .btn-primary {
   background-color: var(--primary-light-blue) !important;
   border-color: var(--light-blue-muted) !important;
@@ -118,7 +122,8 @@ body {
 
 .avatar {
   border-radius: 50%;
-  border: 3px solid var(--primary-light-blue) !important;
+  border: 4px solid var(--light-blue-muted) !important;
+  background-color: var(--primary-soft-white) !important;
 }
 
 .nav-avatar {

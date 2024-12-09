@@ -77,6 +77,7 @@ export default {
     currentUser: {
       type: Object,
       required: true,
+      default: () => ({})
     },
   },
   data() {
@@ -86,7 +87,7 @@ export default {
   },
   computed: {
     isOwner() {
-      return this.currentUser?.userId === this.item?.created_by?._id;
+      return this.currentUser?.userId && this.currentUser.userId === this.item?.created_by?._id;
     },
     formattedCreatedAt() {
       const options = {

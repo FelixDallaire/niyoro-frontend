@@ -11,12 +11,13 @@
       </div>
 
       <div class="d-flex align-items-center">
-        <div v-if="isAuthenticated">
+        <template v-if="isAuthenticated">
+          <span class="me-2 nav-username fw-medium">{{ username }}</span>
           <div class="dropdown">
             <button class="btn btn-link p-0 border-0 dropdown-toggle-no-arrow" type="button" id="avatarDropdown"
               data-bs-toggle="dropdown" aria-expanded="false">
               <div class="avatar-border">
-                <img :src="userAvatar" alt="User Avatar" class="rounded-circle avatar img-thumbnail nav-avatar border-3" />
+                <img :src="userAvatar" alt="User Avatar" class="rounded-circle avatar img-thumbnail nav-avatar" />
               </div>
             </button>
             <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm" aria-labelledby="avatarDropdown">
@@ -33,15 +34,15 @@
                 <hr class="dropdown-divider" />
               </li>
               <li>
-                <button @click="logout" class="dropdown-item">Déconnexion</button>
+                <button @click="logout" class="dropdown-item text-danger">Déconnexion</button>
               </li>
             </ul>
           </div>
-        </div>
-        <div v-else>
-          <router-link to="/login" class="btn btn-primary">Se connecter</router-link>
-          <router-link to="/signup" class="btn btn-outline-primary ms-2">Inscription</router-link>
-        </div>
+        </template>
+        <template v-else>
+          <router-link class="btn btn-primary me-2" to="/login">Connexion</router-link>
+          <router-link class="btn btn-outline-primary" to="/signup">Inscription</router-link>
+        </template>
       </div>
     </div>
   </nav>
@@ -63,13 +64,10 @@ export default {
     const isAuthenticated = computed(() => authStore.isAuthenticated);
     const is_admin = computed(() => authStore.is_admin);
     const userAvatar = computed(() => authStore.user?.avatar);
+    const username = computed(() => authStore.user?.username);
 
     const logout = () => {
       authStore.logoutUser();
-    };
-
-    const isActive = (route) => {
-      return window.location.pathname === route;
     };
 
     return {
@@ -77,7 +75,7 @@ export default {
       is_admin,
       userAvatar,
       logout,
-      isActive,
+      username,
     };
   },
 };

@@ -19,10 +19,13 @@ export const useItemStore = defineStore("itemStore", {
   }),
 
   actions: {
-    async loadItems() {
-      await this._handleRequest(fetchItems, (data) => {
-        this.items = data;
-      });
+    async loadItems(isAuthenticated = false) {
+      await this._handleRequest(
+        () => fetchItems(isAuthenticated),
+        (data) => {
+          this.items = data;
+        }
+      );
     },
 
     async loadMyItems() {
@@ -86,12 +89,10 @@ export const useItemStore = defineStore("itemStore", {
     },
 
     async togglePin(itemId, currentStickyStatus) {
-      debugger;
       const updatedData = { sticky: !currentStickyStatus };
       await this._handleRequest(
         () => updateItem(itemId, updatedData),
         (data) => {
-          debugger;
           this._updateItemList(this.items, itemId, data);
           this._updateItemList(this.myItems, itemId, data);
         }
@@ -116,7 +117,6 @@ export const useItemStore = defineStore("itemStore", {
       const index = list.findIndex((item) => item._id === itemId);
       if (index !== -1) {
         list[index] = { ...list[index], ...updatedData };
-      } else {
       }
     },
   },

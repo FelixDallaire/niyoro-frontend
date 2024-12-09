@@ -15,9 +15,9 @@
         <input type="checkbox" class="form-check-input me-1" id="showMyItems" v-model="showMyItems" />
         <label class="form-check-label" for="showMyItems">Afficher mes items</label>
       </div>
-      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-3">
         <div v-for="item in filteredItems" :key="item._id" class="col">
-          <ItemCard :item="item" :current-user="currentUser" />
+          <ItemCard :item="item" :current-user="currentUser || {}" />
         </div>
       </div>
     </div>
@@ -50,7 +50,9 @@ export default {
     const filteredItems = computed(() => {
       let filtered = showMyItems.value
         ? itemStore.myItems
-        : itemStore.items.filter((item) => !item.private || item.owner === currentUser.value?.userId);
+        : itemStore.items.filter(
+          (item) => !item.private || (item.created_by?._id === currentUser.value?.userId)
+        );
 
       return filtered.sort((a, b) => {
         if (a.sticky !== b.sticky) {
@@ -59,6 +61,7 @@ export default {
         return new Date(b.createdAt) - new Date(a.createdAt);
       });
     });
+
 
     const loadTags = async () => {
       if (!tagStore.tags.length) {

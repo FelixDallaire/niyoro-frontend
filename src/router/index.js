@@ -27,7 +27,7 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/item/:id",
+    path: "/item/:permalink",
     name: "ItemDetail",
     component: ItemDetailView,
     props: true,

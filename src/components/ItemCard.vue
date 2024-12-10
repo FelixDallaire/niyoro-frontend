@@ -97,7 +97,7 @@ export default {
       await itemStore.togglePin(this.item._id, this.item.sticky);
     },
     viewDetails() {
-      this.$router.push({ name: "ItemDetail", params: { id: this.item.permalien } });
+      this.$router.push({ name: "ItemDetail", params: { permalink: this.item.permalink } });
     },
     getTagName(tagId) {
       const tagStore = useTagStore();

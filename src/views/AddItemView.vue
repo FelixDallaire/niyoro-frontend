@@ -50,7 +50,7 @@ export default {
 
         router.push("/");
       } catch (error) {
-        console.error("[ERROR] Échec de l'opération :", error);
+        console.error("Échec de l'opération :", error);
         alert("Une erreur est survenue.");
       }
     };
@@ -58,7 +58,7 @@ export default {
     onMounted(async () => {
       if (isEditMode.value) {
         try {
-          await itemStore.loadItem(route.params.id);
+          await itemStore.loadItemById(route.params.id);
           const item = itemStore.selectedItem;
 
           if (!item) {
@@ -83,7 +83,7 @@ export default {
             tagsInput: tagNames.join(" "),
           };
         } catch (error) {
-          console.error("[ERROR] Impossible de charger l'item :", error);
+          console.error("Impossible de charger l'item :", error);
           alert("Une erreur est survenue.");
         }
       }

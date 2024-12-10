@@ -1,11 +1,11 @@
-import { defineStore } from 'pinia';
-import { login, signup, setAuthToken } from '../services/authService';
-import { useUserStore } from './userStore';
+import { defineStore } from "pinia";
+import { login, signup, setAuthToken } from "../services/authService";
+import { useUserStore } from "./userStore";
 
-export const useAuthStore = defineStore('authStore', {
+export const useAuthStore = defineStore("authStore", {
   state: () => ({
-    token: localStorage.getItem('authToken') || null,
-    user: JSON.parse(localStorage.getItem('user')) || null,
+    token: localStorage.getItem("authToken") || null,
+    user: JSON.parse(localStorage.getItem("user")) || null,
     loading: false,
     error: null,
   }),
@@ -16,7 +16,8 @@ export const useAuthStore = defineStore('authStore', {
       try {
         const response = await signup(signupData);
 
-        const { token, userId, username, email, avatar, is_admin } = response.data;
+        const { token, userId, username, email, avatar, is_admin } =
+          response.data;
 
         const user = {
           userId,
@@ -26,8 +27,8 @@ export const useAuthStore = defineStore('authStore', {
           is_admin,
         };
 
-        localStorage.setItem('authToken', token);
-        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem("authToken", token);
+        localStorage.setItem("user", JSON.stringify(user));
 
         this.token = token;
         this.user = user;
@@ -48,7 +49,8 @@ export const useAuthStore = defineStore('authStore', {
       try {
         const response = await login(loginData);
 
-        const { token, userId, username, email, avatar, is_admin } = response.data;
+        const { token, userId, username, email, avatar, is_admin } =
+          response.data;
 
         const user = {
           userId,
@@ -58,8 +60,8 @@ export const useAuthStore = defineStore('authStore', {
           is_admin,
         };
 
-        localStorage.setItem('authToken', token);
-        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem("authToken", token);
+        localStorage.setItem("user", JSON.stringify(user));
 
         this.token = token;
         this.user = user;
@@ -75,9 +77,9 @@ export const useAuthStore = defineStore('authStore', {
       }
     },
 
-    logoutUser() {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('user');
+    logoutUser(router) {
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("user");
       this.token = null;
       this.user = null;
 
@@ -85,11 +87,15 @@ export const useAuthStore = defineStore('authStore', {
 
       const userStore = useUserStore();
       userStore.currentUser = null;
+
+      if (router) {
+        router.push("/login");
+      }
     },
 
     refreshStateFromLocalStorage() {
-      this.token = localStorage.getItem('authToken');
-      this.user = JSON.parse(localStorage.getItem('user'));
+      this.token = localStorage.getItem("authToken");
+      this.user = JSON.parse(localStorage.getItem("user"));
 
       if (this.token) {
         setAuthToken(this.token);
@@ -103,11 +109,7 @@ export const useAuthStore = defineStore('authStore', {
   },
 
   getters: {
-    isAuthenticated: (state) => {
-      return !!state.token;
-    },
-    is_admin: (state) => {
-      return state.user?.is_admin ?? false;
-    },
+    isAuthenticated: (state) => !!state.token,
+    is_admin: (state) => state.user?.is_admin ?? false,
   },
 });

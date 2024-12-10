@@ -1,39 +1,52 @@
-import { defineStore } from 'pinia';
+import { defineStore } from "pinia";
 import {
   createReaction,
   getReactionsByItem,
   deleteReaction,
-} from '../services/reactionService';
+} from "../services/reactionService";
 
-export const useReactionStore = defineStore('reactionStore', {
+export const useReactionStore = defineStore("reactionStore", {
   state: () => ({
-    reactions: [],
-    loading: false,
-    error: null,
+    reactions: [], // All reactions for an item
+    loading: false, // Loading state
+    error: null, // Error messages
   }),
   actions: {
+    /**
+     * Loads reactions for a specific item.
+     * @param {string} itemId - The item's ID.
+     */
     async loadReactionsByItem(itemId) {
       this.loading = true;
       try {
         const response = await getReactionsByItem(itemId);
         this.reactions = response.data;
       } catch (err) {
-        this.error = err.message;
+        this.error = err.response?.data?.message || err.message;
       } finally {
         this.loading = false;
       }
     },
-    async addReaction(itemId, reactionData) {
+    /**
+     * Adds a reaction to an item.
+     * @param {string} itemId - The item's ID.
+     * @param {number|string} type - The reaction type (1, 2, 3, or 4).
+     */
+    async addReaction(itemId, type) {
       this.loading = true;
       try {
-        const response = await createReaction(itemId, reactionData);
+        const response = await createReaction(itemId, { type });
         this.reactions.push(response.data);
       } catch (err) {
-        this.error = err.message;
+        this.error = err.response?.data?.message || err.message;
       } finally {
         this.loading = false;
       }
     },
+    /**
+     * Removes a reaction by its ID.
+     * @param {string} reactionId - The reaction's ID.
+     */
     async removeReaction(reactionId) {
       this.loading = true;
       try {
@@ -42,15 +55,31 @@ export const useReactionStore = defineStore('reactionStore', {
           (reaction) => reaction._id !== reactionId
         );
       } catch (err) {
-        this.error = err.message;
+        this.error = err.response?.data?.message || err.message;
       } finally {
         this.loading = false;
       }
     },
   },
   getters: {
-    getReactionsByType: (state) => (type) => {
-      return state.reactions.filter((reaction) => reaction.type === type);
+    /**
+     * Returns the count of reactions by type.
+     */
+    reactionCounts: (state) => {
+      return state.reactions.reduce((counts, reaction) => {
+        const type = reaction.type;
+        counts[type] = (counts[type] || 0) + 1;
+        return counts;
+      }, {});
+    },
+    /**
+     * Returns the logged-in user's reaction, if any.
+     * @param {string} userId - The user's ID.
+     */
+    userReaction: (state) => (userId) => {
+      return state.reactions.find(
+        (reaction) => reaction.user_id._id === userId
+      );
     },
   },
 });

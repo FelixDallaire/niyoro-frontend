@@ -153,17 +153,25 @@ h2 {
   color: var(--dark-blue-lighter) !important;
 }
 
-.bi-lock-fill, .bi-globe {
+.bi-lock-fill,
+.bi-globe {
   color: var(--light-blue-muted);
 }
-.badge {
+
+.tag-badge {
   background-color: var(--primary-light-blue) !important;
   color: var(--dark-blue-lighter) !important;
 }
 
-.badge:hover {
+.tag-badge:hover {
   background-color: var(--primary-light-blue) !important;
   color: var(--soft-white-light) !important;
+  cursor: pointer;
+}
+
+.reaction-badge {
+  background-color: var(--primary-light-blue) !important;
+  color: var(--dark-blue-lighter) !important;
 }
 
 .btn-sticky {

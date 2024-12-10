@@ -53,11 +53,9 @@ export default {
                 loading.value = true;
 
                 if (props.id) {
-                    console.log("[DEBUG] Chargement du profil utilisateur avec ID:", props.id);
                     await userStore.loadUserById(props.id);
                     profile.value = userStore.selectedUser;
                 } else {
-                    console.log("[DEBUG] Chargement du profil utilisateur connecté.");
                     await userStore.loadCurrentUser();
                     profile.value = userStore.currentUser;
                 }
@@ -74,7 +72,7 @@ export default {
                         : "Date inconnue";
                 }
             } catch (err) {
-                console.error("[ERROR] Impossible de charger le profil:", err);
+                console.error("Impossible de charger le profil:", err);
                 error.value = "Impossible de charger le profil.";
             } finally {
                 loading.value = false;

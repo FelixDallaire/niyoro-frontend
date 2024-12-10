@@ -50,16 +50,14 @@
 
 <script>
 import { useAuthStore } from '../stores/authStore';
-import { computed, onMounted } from 'vue';
+import { computed } from 'vue';
+import { useRouter } from 'vue-router';
 
 export default {
   name: 'NavBar',
   setup() {
     const authStore = useAuthStore();
-
-    onMounted(() => {
-      authStore.refreshStateFromLocalStorage();
-    });
+    const router = useRouter();
 
     const isAuthenticated = computed(() => authStore.isAuthenticated);
     const is_admin = computed(() => authStore.is_admin);
@@ -67,7 +65,7 @@ export default {
     const username = computed(() => authStore.user?.username);
 
     const logout = () => {
-      authStore.logoutUser();
+      authStore.logoutUser(router);
     };
 
     return {
@@ -80,6 +78,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 .navbar {

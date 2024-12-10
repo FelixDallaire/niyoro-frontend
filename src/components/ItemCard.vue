@@ -12,26 +12,23 @@
           • {{ formattedCreatedAt }}
         </small>
       </div>
-      <PinButton
-        :sticky="item.sticky"
-        :isOwner="isOwner"
-        :isAdmin="currentUser.isAdmin"
-        @toggle-sticky="toggleSticky"
-      />
+      <PinButton :sticky="item.sticky" :isOwner="isOwner" :isAdmin="currentUser?.is_admin ?? false"
+        @toggle-sticky="toggleSticky" />
     </div>
 
     <div class="card-body">
       <code v-if="item.content" ref="codeBlock" class="highlighted rounded p-3"></code>
 
       <div v-if="item.tags.length" class="mt-3">
-        <span v-for="tagId in item.tags" :key="tagId" class="badge me-1 text-decoration-none">
+        <span v-for="tagId in item.tags" :key="tagId" class="badge tag-badge me-1 text-decoration-none">
           {{ getTagName(tagId) }}
         </span>
       </div>
     </div>
 
     <div class="card-footer d-flex justify-content-between align-items-center">
-      <button class="btn btn-secondary btn-sm" :title="'Voir les détails de l’item'" @click="viewDetails">
+      <button v-if="showDetailsButton" class="btn btn-secondary btn-sm" :title="'Voir les détails de l’item'"
+        @click="viewDetails">
         <i class="bi bi-info-circle-fill"></i>
       </button>
 
@@ -60,6 +57,10 @@ export default {
       required: true,
       default: () => ({}),
     },
+    showDetailsButton: {
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {
@@ -68,7 +69,7 @@ export default {
   },
   computed: {
     isOwner() {
-      return this.currentUser?.userId && this.currentUser.userId === this.item?.created_by?._id;
+      return (this.currentUser?.userId && this.currentUser.userId === this.item?.created_by?._id) ?? false;
     },
     formattedCreatedAt() {
       const options = {

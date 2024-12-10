@@ -1,13 +1,13 @@
-import { defineStore } from 'pinia';
+import { defineStore } from "pinia";
 import {
   createTag,
   getAllTags,
   getTagById,
   updateTag,
   deleteTag,
-} from '../services/tagService';
+} from "../services/tagService";
 
-export const useTagStore = defineStore('tagStore', {
+export const useTagStore = defineStore("tagStore", {
   state: () => ({
     tags: [],
     tagsById: {},
@@ -21,18 +21,21 @@ export const useTagStore = defineStore('tagStore', {
       try {
         const response = await getAllTags();
         this.tags = response.data;
-
+    
         this.tagsById = {};
         this.tags.forEach((tag) => {
           this.tagsById[tag._id] = tag;
         });
-
+    
+        return this.tags; // Explicitly return the tags
       } catch (err) {
         this.error = err.message;
+        return []; // Return an empty array on failure
       } finally {
         this.loading = false;
       }
     },
+    
     async loadTagById(tagId) {
       this.loading = true;
       try {

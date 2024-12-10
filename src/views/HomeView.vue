@@ -17,7 +17,7 @@
       </div>
       <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-3">
         <div v-for="item in filteredItems" :key="item._id" class="col">
-          <ItemCard :item="item" :current-user="currentUser || {}" />
+          <ItemCard :item="item" :showDetailsButton="true" :current-user="currentUser || {}" />
         </div>
       </div>
     </div>
@@ -64,13 +64,14 @@ export default {
 
 
     const loadTags = async () => {
-      if (!tagStore.tags.length) {
-        await tagStore.loadAllTags();
-      } else {
+      try {
         const latestTags = await tagStore.loadAllTags();
         tagStore.tags = [...new Set([...tagStore.tags, ...latestTags])];
+      } catch (error) {
+        console.error("Error loading tags:", error);
       }
     };
+
 
     onMounted(async () => {
       if (!items.value.length) {

@@ -12,7 +12,7 @@
     <div v-else-if="item">
       <div class="row g-4">
         <div class="col-md-6">
-          <ItemCard :item="item" :current-user="currentUser" :showDetailsButton="false" />
+          <ItemCard :item="item" :currentUser="currentUser" :showDetailsButton="false" />
         </div>
         <div class="col-md-6">
           <ItemReaction :itemId="item._id" />
@@ -34,7 +34,7 @@
 <script>
 import { useItemStore } from "@/stores/itemStore";
 import { useUserStore } from "@/stores/userStore";
-import { onMounted, computed, watch } from "vue";
+import { onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import ItemCard from "@/components/ItemCard.vue";
 import LeafletMap from "@/components/LeafletMap.vue";
@@ -58,15 +58,7 @@ export default {
     const loading = computed(() => itemStore.loading);
     const error = computed(() => itemStore.error);
 
-    watch(
-      [currentUser, item],
-      ([newCurrentUser, newItem]) => {
-      },
-      { immediate: true }
-    );
-
     onMounted(async () => {
-
       try {
         await itemStore.loadItemByPermalink(permalink);
       } catch (err) {
@@ -84,16 +76,6 @@ export default {
 };
 </script>
 
+
 <style scoped>
-.container {
-  padding: 1rem;
-}
-
-h1 {
-  margin-bottom: 1rem;
-}
-
-.card {
-  border-radius: 0.75rem;
-}
 </style>

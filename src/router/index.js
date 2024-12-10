@@ -31,6 +31,7 @@ const routes = [
     name: "ItemDetail",
     component: ItemDetailView,
     props: true,
+    meta: { requiresAuth: true },
   },
   {
     path: "/profile/:id?",

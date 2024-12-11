@@ -6,10 +6,12 @@
           <a :href="item.url" class="text-decoration-none theme-link" target="_blank">
             {{ item.title }}
           </a>
-        </h5> <small class="text-muted">
+        </h5>
+        <small class="text-muted">
           <i :class="item.private ? 'bi bi-lock-fill' : 'bi bi-globe'" :title="item.private ? 'Privé' : 'Public'"></i>
           • Par
-          <router-link :to="{ name: 'Profile', params: { id: item.created_by._id } }" class="text-decoration-none theme-link">
+          <router-link :to="{ name: 'Profile', params: { id: item.created_by._id } }"
+            class="text-decoration-none theme-link">
             {{ item.created_by.username }}
           </router-link>
           • {{ formattedCreatedAt }}
@@ -23,7 +25,8 @@
       <code v-if="item.content" ref="codeBlock" class="highlighted rounded p-3"></code>
 
       <div v-if="item.tags.length" class="mt-3">
-        <span v-for="tagId in item.tags" :key="tagId" class="badge tag-badge me-1 text-decoration-none">
+        <span v-for="tagId in item.tags" :key="tagId" class="badge tag-badge me-1 text-decoration-none"
+          @click="$emit('tagSelected', tagId)">
           {{ getTagName(tagId) }}
         </span>
       </div>
@@ -43,7 +46,6 @@
 <script>
 import hljs from "highlight.js";
 import "highlight.js/styles/paraiso-light.css";
-import { useItemStore } from "@/stores/itemStore";
 import { useTagStore } from "@/stores/tagStore";
 import PinButton from "@/components/PinButton.vue";
 import ItemDropdownMenu from "@/components/ItemDropdownMenu.vue";
@@ -65,14 +67,13 @@ export default {
       default: true,
     },
   },
-  data() {
-    return {
-      codeBlock: null,
-    };
-  },
   computed: {
     isOwner() {
-      return (this.currentUser?.userId && this.currentUser.userId === this.item?.created_by?._id) ?? false;
+      return (
+        (this.currentUser?.userId &&
+          this.currentUser.userId === this.item?.created_by?._id) ??
+        false
+      );
     },
     formattedCreatedAt() {
       const options = {
@@ -82,18 +83,16 @@ export default {
         hour: "2-digit",
         minute: "2-digit",
       };
-      return new Date(this.item.createdAt).toLocaleDateString("fr-FR", options).replace(":", "h");
+      return new Date(this.item.createdAt)
+        .toLocaleDateString("fr-FR", options)
+        .replace(":", "h");
     },
   },
   methods: {
     highlightCode() {
-      if (this.codeBlock) {
-        if (this.codeBlock.dataset.highlighted) {
-          delete this.codeBlock.dataset.highlighted;
-        }
-        this.codeBlock.textContent = this.item.content;
-        hljs.highlightElement(this.codeBlock);
-        this.codeBlock.dataset.highlighted = "yes";
+      if (this.$refs.codeBlock) {
+        this.$refs.codeBlock.textContent = this.item.content;
+        hljs.highlightElement(this.$refs.codeBlock);
       }
     },
     async toggleSticky() {
@@ -101,7 +100,10 @@ export default {
       await itemStore.togglePin(this.item._id, this.item.sticky);
     },
     viewDetails() {
-      this.$router.push({ name: "ItemDetail", params: { permalink: this.item.permalink } });
+      this.$router.push({
+        name: "ItemDetail",
+        params: { permalink: this.item.permalink },
+      });
     },
     getTagName(tagId) {
       const tagStore = useTagStore();
@@ -110,7 +112,6 @@ export default {
     },
   },
   mounted() {
-    this.codeBlock = this.$refs.codeBlock;
     this.highlightCode();
   },
   watch: {

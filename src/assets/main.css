@@ -150,6 +150,14 @@ body {
   border: none !important;
 }
 
+.bg-theme-light {
+  background-color: var(--primary-light-blue) !important;
+}
+
+.bg-theme-dark {
+  background-color: var(--dark-blue-lighter) !important;
+}
+
 h2 {
   color: var(--dark-blue-lighter) !important;
 }

@@ -7,15 +7,11 @@ import {
 
 export const useReactionStore = defineStore("reactionStore", {
   state: () => ({
-    reactions: [], // All reactions for an item
-    loading: false, // Loading state
-    error: null, // Error messages
+    reactions: [],
+    loading: false,
+    error: null,
   }),
   actions: {
-    /**
-     * Loads reactions for a specific item.
-     * @param {string} itemId - The item's ID.
-     */
     async loadReactionsByItem(itemId) {
       this.loading = true;
       try {
@@ -27,11 +23,6 @@ export const useReactionStore = defineStore("reactionStore", {
         this.loading = false;
       }
     },
-    /**
-     * Adds a reaction to an item.
-     * @param {string} itemId - The item's ID.
-     * @param {number|string} type - The reaction type (1, 2, 3, or 4).
-     */
     async addReaction(itemId, type) {
       this.loading = true;
       try {
@@ -43,10 +34,6 @@ export const useReactionStore = defineStore("reactionStore", {
         this.loading = false;
       }
     },
-    /**
-     * Removes a reaction by its ID.
-     * @param {string} reactionId - The reaction's ID.
-     */
     async removeReaction(reactionId) {
       this.loading = true;
       try {
@@ -62,9 +49,6 @@ export const useReactionStore = defineStore("reactionStore", {
     },
   },
   getters: {
-    /**
-     * Returns the count of reactions by type.
-     */
     reactionCounts: (state) => {
       return state.reactions.reduce((counts, reaction) => {
         const type = reaction.type;
@@ -72,10 +56,6 @@ export const useReactionStore = defineStore("reactionStore", {
         return counts;
       }, {});
     },
-    /**
-     * Returns the logged-in user's reaction, if any.
-     * @param {string} userId - The user's ID.
-     */
     userReaction: (state) => (userId) => {
       return state.reactions.find(
         (reaction) => reaction.user_id._id === userId

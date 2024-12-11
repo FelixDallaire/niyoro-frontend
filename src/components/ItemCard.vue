@@ -2,17 +2,20 @@
   <div class="card shadow-sm h-100">
     <div class="card-header d-flex position-relative">
       <div class="flex-grow-1 me-5">
-        <h5 class="card-title mb-0 text-wrap">{{ item.title }}</h5>
-        <small class="text-muted">
+        <h5 class="card-title mb-0 text-wrap">
+          <a :href="item.url" class="text-decoration-none theme-link" target="_blank">
+            {{ item.title }}
+          </a>
+        </h5> <small class="text-muted">
           <i :class="item.private ? 'bi bi-lock-fill' : 'bi bi-globe'" :title="item.private ? 'Privé' : 'Public'"></i>
           • Par
-          <router-link :to="{ name: 'Profile', params: { id: item.created_by._id } }" class="text-decoration-none">
+          <router-link :to="{ name: 'Profile', params: { id: item.created_by._id } }" class="text-decoration-none theme-link">
             {{ item.created_by.username }}
           </router-link>
           • {{ formattedCreatedAt }}
         </small>
       </div>
-      <PinButton :sticky="item.sticky" :isOwner="isOwner" :isAdmin="currentUser?.is_admin ?? false"
+      <PinButton :sticky="item.sticky" :isOwner="isOwner" :is_admin="currentUser?.is_admin ?? false"
         @toggle-sticky="toggleSticky" />
     </div>
 

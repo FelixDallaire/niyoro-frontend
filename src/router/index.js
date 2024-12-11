@@ -56,9 +56,9 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
   const isAuthenticated = authStore.isAuthenticated;
-  const isAdmin = authStore.isAdmin;
+  const is_admin = authStore.is_admin;
 
-  if (to.matched.some((record) => record.meta.requiresAdmin) && !isAdmin) {
+  if (to.matched.some((record) => record.meta.requiresAdmin) && !is_admin) {
     alert("Accès interdit : réservé aux administrateurs.");
     return next({ name: "Home" });
   }

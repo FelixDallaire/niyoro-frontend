@@ -17,7 +17,7 @@ export default {
       type: Boolean,
       required: true,
     },
-    isAdmin: {
+    is_admin: {
       type: Boolean,
       required: true,
       default: false,
@@ -25,10 +25,10 @@ export default {
   },
   computed: {
     isVisible() {
-      return this.isOwner || this.isAdmin || this.sticky;
+      return this.isOwner || this.is_admin || this.sticky;
     },
     canToggle() {
-      return this.isOwner || this.isAdmin;
+      return this.isOwner || this.is_admin;
     },
   },
   methods: {

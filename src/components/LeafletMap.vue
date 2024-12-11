@@ -37,42 +37,41 @@ export default {
     const mapInstance = ref(null);
 
     const initializeMap = () => {
-      mapInstance.value = L.map("map").setView([props.latitude, props.longitude], 13);
-
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }).addTo(mapInstance.value);
-
-      addMarker(props.latitude, props.longitude, "Item Location");
+      mapInstance.value = createMap([props.latitude, props.longitude]);
+      addTileLayer();
+      addMarker(props.latitude, props.longitude);
     };
 
-    const addMarker = (latitude, longitude, popupText) => {
-      L.marker([latitude, longitude])
-        .addTo(mapInstance.value)
-        .bindPopup(popupText)
-        .openPopup();
+    const createMap = (coordinates) =>
+      L.map("map").setView(coordinates, 13);
+
+    const addTileLayer = () => {
+      L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+    subdomains:['mt0','mt1','mt2','mt3'],
+    attribution: 'Map data &copy; <a href="https://www.google.com/maps">Google Maps</a>'
+}).addTo(mapInstance.value);
+
+    };
+
+    const addMarker = (latitude, longitude) => {
+      L.marker([latitude, longitude]).addTo(mapInstance.value);
     };
 
     const updateMapView = ([newLatitude, newLongitude]) => {
-      if (mapInstance.value) {
-        mapInstance.value.setView([newLatitude, newLongitude], 13);
-        addMarker(newLatitude, newLongitude, "Updated Location");
-      }
+      if (!mapInstance.value) return;
+      mapInstance.value.setView([newLatitude, newLongitude], 13);
+      addMarker(newLatitude, newLongitude);
     };
 
-    onMounted(() => {
-      initializeMap();
-    });
+    onMounted(initializeMap);
 
-    watch(
-      () => [props.latitude, props.longitude],
-      updateMapView
-    );
+    watch(() => [props.latitude, props.longitude], updateMapView);
 
     return {};
   },
 };
 </script>
+
 
 <style scoped>
 #map {

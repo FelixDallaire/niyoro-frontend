@@ -27,10 +27,10 @@ export const useTagStore = defineStore("tagStore", {
           this.tagsById[tag._id] = tag;
         });
     
-        return this.tags; // Explicitly return the tags
+        return this.tags; 
       } catch (err) {
         this.error = err.message;
-        return []; // Return an empty array on failure
+        return [];
       } finally {
         this.loading = false;
       }

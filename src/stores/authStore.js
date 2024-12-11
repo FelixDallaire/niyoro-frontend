@@ -11,6 +11,11 @@ export const useAuthStore = defineStore("authStore", {
   }),
 
   actions: {
+    /**
+     * Gère l'inscription d'un nouvel utilisateur et met à jour l'état d'authentification.
+     *
+     * @param {Object} signupData - Les données nécessaires pour l'inscription (ex. email, mot de passe).
+     */
     async signupUser(signupData) {
       this.loading = true;
       try {
@@ -44,6 +49,11 @@ export const useAuthStore = defineStore("authStore", {
       }
     },
 
+    /**
+     * Gère la connexion d'un utilisateur et met à jour l'état d'authentification.
+     *
+     * @param {Object} loginData - Les données nécessaires pour la connexion (ex. email, mot de passe).
+     */
     async loginUser(loginData) {
       this.loading = true;
       try {
@@ -77,6 +87,11 @@ export const useAuthStore = defineStore("authStore", {
       }
     },
 
+    /**
+     * Déconnecte l'utilisateur et réinitialise l'état d'authentification.
+     *
+     * @param {Object} router - L'objet Vue Router pour rediriger vers la page de connexion.
+     */
     logoutUser(router) {
       localStorage.removeItem("authToken");
       localStorage.removeItem("user");
@@ -93,6 +108,9 @@ export const useAuthStore = defineStore("authStore", {
       }
     },
 
+    /**
+     * Recharge l'état d'authentification à partir des données stockées dans le localStorage.
+     */
     refreshStateFromLocalStorage() {
       this.token = localStorage.getItem("authToken");
       this.user = JSON.parse(localStorage.getItem("user"));
@@ -109,7 +127,14 @@ export const useAuthStore = defineStore("authStore", {
   },
 
   getters: {
+    /**
+     * Vérifie si l'utilisateur est authentifié.
+     */
     isAuthenticated: (state) => !!state.token,
+
+    /**
+     * Vérifie si l'utilisateur a le rôle d'administrateur.
+     */
     is_admin: (state) => state.user?.is_admin ?? false,
   },
 });

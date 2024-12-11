@@ -20,6 +20,11 @@ export const useItemStore = defineStore("itemStore", {
   }),
 
   actions: {
+    /**
+     * Charge tous les items (publics ou privés en fonction de l'authentification).
+     *
+     * @param {Boolean} isAuthenticated - Indique si l'utilisateur est authentifié.
+     */
     async loadItems(isAuthenticated = false) {
       await this._handleRequest(
         () => fetchItems(isAuthenticated),
@@ -29,12 +34,20 @@ export const useItemStore = defineStore("itemStore", {
       );
     },
 
+    /**
+     * Charge les items appartenant à l'utilisateur actuel.
+     */
     async loadMyItems() {
       await this._handleRequest(fetchMyItems, (data) => {
         this.myItems = data;
       });
     },
 
+    /**
+     * Charge les items créés par un utilisateur spécifique.
+     *
+     * @param {String} userId - L'ID de l'utilisateur.
+     */
     async loadItemsByUser(userId) {
       await this._handleRequest(
         () => fetchItemsByUser(userId),
@@ -44,6 +57,11 @@ export const useItemStore = defineStore("itemStore", {
       );
     },
 
+    /**
+     * Charge un item par son ID.
+     *
+     * @param {String} itemId - L'ID de l'item.
+     */
     async loadItemById(itemId) {
       await this._handleRequest(
         () => fetchItemById(itemId),
@@ -53,6 +71,11 @@ export const useItemStore = defineStore("itemStore", {
       );
     },
 
+    /**
+     * Charge un item à partir de son permalink.
+     *
+     * @param {String} permalink - Le permalink de l'item.
+     */
     async loadItemByPermalink(permalink) {
       await this._handleRequest(
         () => fetchItemByPermalink(permalink),
@@ -62,6 +85,11 @@ export const useItemStore = defineStore("itemStore", {
       );
     },
 
+    /**
+     * Ajoute un nouvel item et met à jour la liste des items.
+     *
+     * @param {Object} itemData - Les données de l'item à ajouter.
+     */
     async addItem(itemData) {
       await this._handleRequest(
         () => createItem(itemData),
@@ -73,6 +101,12 @@ export const useItemStore = defineStore("itemStore", {
       );
     },
 
+    /**
+     * Modifie un item existant.
+     *
+     * @param {String} itemId - L'ID de l'item à modifier.
+     * @param {Object} updatedData - Les données mises à jour de l'item.
+     */
     async editItem(itemId, updatedData) {
       await this._handleRequest(
         () => updateItem(itemId, updatedData),
@@ -86,6 +120,11 @@ export const useItemStore = defineStore("itemStore", {
       );
     },
 
+    /**
+     * Supprime un item et met à jour les listes.
+     *
+     * @param {String} itemId - L'ID de l'item à supprimer.
+     */
     async removeItem(itemId) {
       await this._handleRequest(
         () => deleteItem(itemId),
@@ -99,6 +138,12 @@ export const useItemStore = defineStore("itemStore", {
       );
     },
 
+    /**
+     * Alterne l'état "sticky" (épinglé) d'un item.
+     *
+     * @param {String} itemId - L'ID de l'item à modifier.
+     * @param {Boolean} currentStickyStatus - L'état actuel "sticky" de l'item.
+     */
     async togglePin(itemId, currentStickyStatus) {
       const updatedData = { sticky: !currentStickyStatus };
       await this._handleRequest(
@@ -110,6 +155,12 @@ export const useItemStore = defineStore("itemStore", {
       );
     },
 
+    /**
+     * Gère les requêtes et les callbacks de succès ou d'échec.
+     *
+     * @param {Function} requestFn - La fonction de requête à exécuter.
+     * @param {Function} successCallback - La fonction à exécuter en cas de succès.
+     */
     async _handleRequest(requestFn, successCallback) {
       this.loading = true;
       this.error = null;
@@ -118,12 +169,21 @@ export const useItemStore = defineStore("itemStore", {
         successCallback(response.data);
       } catch (err) {
         this.error =
-          err.response?.data?.message || err.message || "An error occurred";
+          err.response?.data?.message ||
+          err.message ||
+          "Une erreur s'est produite.";
       } finally {
         this.loading = false;
       }
     },
 
+    /**
+     * Met à jour une liste d'items avec les nouvelles données.
+     *
+     * @param {Array} list - La liste des items à mettre à jour.
+     * @param {String} itemId - L'ID de l'item à mettre à jour.
+     * @param {Object} updatedData - Les nouvelles données de l'item.
+     */
     _updateItemList(list, itemId, updatedData) {
       const index = list.findIndex((item) => item._id === itemId);
       if (index !== -1) {
@@ -133,11 +193,26 @@ export const useItemStore = defineStore("itemStore", {
   },
 
   getters: {
+    /**
+     * Récupère un item par son ID.
+     */
     getItemById: (state) => (itemId) =>
       state.items.find((item) => item._id === itemId),
+
+    /**
+     * Récupère un item par son permalink.
+     */
     getItemByPermalink: (state) => (permalink) =>
       state.items.find((item) => item.permalink === permalink),
+
+    /**
+     * Récupère les items publics.
+     */
     publicItems: (state) => state.items.filter((item) => !item.private),
+
+    /**
+     * Récupère les items épinglés.
+     */
     stickyItems: (state) => state.items.filter((item) => item.sticky),
   },
 });

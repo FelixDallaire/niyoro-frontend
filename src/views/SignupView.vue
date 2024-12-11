@@ -1,5 +1,5 @@
 <template>
-  <div class="signup-view">
+  <div class="signup-view d-flex justify-content-center align-items-center min-vh-100">
     <SignupForm />
   </div>
 </template>
@@ -17,10 +17,6 @@ export default {
 
 <style scoped>
 .signup-view {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
   background-color: var(--primary-soft-white);
 }
 </style>

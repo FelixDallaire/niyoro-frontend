@@ -1,5 +1,5 @@
 <template>
-    <div class="login-view">
+    <div class="login-view d-flex justify-content-center align-items-center min-vh-100">
         <LoginForm />
     </div>
 </template>
@@ -17,10 +17,6 @@ export default {
 
 <style scoped>
 .login-view {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
     background-color: var(--primary-soft-white);
 }
 </style>

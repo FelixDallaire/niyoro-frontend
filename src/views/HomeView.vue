@@ -2,7 +2,7 @@
   <div class="container mt-4">
     <div v-if="loading" class="text-center">
       <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
+        <span class="visually-hidden">Chargement...</span>
       </div>
     </div>
 
@@ -71,10 +71,10 @@ export default {
       let filtered = showMyItems.value
         ? itemStore.myItems
         : itemStore.items.filter(
-            (item) =>
-              !item.private ||
-              item.created_by?._id === currentUser.value?.userId
-          );
+          (item) =>
+            !item.private ||
+            item.created_by?._id === currentUser.value?.userId
+        );
 
       if (selectedTag.value) {
         const tagId = getTagId(selectedTag.value);
@@ -82,27 +82,40 @@ export default {
           filtered = filtered.filter((item) => item.tags.includes(tagId));
         }
       }
-
-      return filtered.sort((a, b) => {
-        if (a.sticky !== b.sticky) {
-          return b.sticky - a.sticky;
+      return filtered.sort((item1, item2) => {
+        if (item1.sticky !== item2.sticky) {
+          return item2.sticky - item1.sticky;
         }
-        return new Date(b.createdAt) - new Date(a.createdAt);
+        return new Date(item2.createdAt) - new Date(item1.createdAt);
       });
     });
 
+    /**
+     * Sélectionne un tag et met à jour la route.
+     *
+     * @param {String} tagId - L'ID du tag sélectionné.
+     */
     const selectTag = (tagId) => {
       const tagName = getTagName(tagId);
       selectedTag.value = tagName;
       router.push({ name: "Home", params: { tag: tagName } });
     };
 
+    /**
+     * Efface le filtre de tag actuel et réinitialise la route.
+     */
     const clearTagFilter = () => {
       selectedTag.value = null;
       tagError.value = false;
       router.push({ name: "Home" });
     };
 
+    /**
+     * Récupère le nom d'un tag à partir de son ID ou de son nom.
+     *
+     * @param {String} tagIdOrName - L'ID ou le nom du tag.
+     * @returns {String} Le nom du tag, ou "Tag inconnu" si introuvable.
+     */
     const getTagName = (tagIdOrName) => {
       const tag = tagStore.tags.find(
         (tag) => tag._id === tagIdOrName || tag.name === tagIdOrName
@@ -110,21 +123,33 @@ export default {
       return tag ? tag.name : "Tag inconnu";
     };
 
+    /**
+     * Récupère l'ID d'un tag à partir de son nom.
+     *
+     * @param {String} tagName - Le nom du tag.
+     * @returns {String|null} L'ID du tag, ou null si introuvable.
+     */
     const getTagId = (tagName) => {
       const tag = tagStore.tags.find((tag) => tag.name === tagName);
       return tag ? tag._id : null;
     };
 
+    /**
+     * Charge tous les tags à partir du store et valide le tag initial si fourni.
+     */
     const loadTags = async () => {
       try {
         const latestTags = await tagStore.loadAllTags();
         tagStore.tags = [...new Set([...tagStore.tags, ...latestTags])];
-        validateInitialTag(); 
+        validateInitialTag();
       } catch (error) {
-        console.error("Error loading tags:", error);
+        console.error("Erreur lors du chargement des tags :", error);
       }
     };
 
+    /**
+     * Valide le tag initial fourni via les props.
+     */
     const validateInitialTag = () => {
       if (props.initialTag && !getTagId(props.initialTag)) {
         tagError.value = true;

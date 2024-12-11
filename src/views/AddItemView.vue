@@ -45,19 +45,19 @@ export default {
     });
 
     /**
-     * Handles the submission of the form.
+     * Gère la soumission du formulaire.
      *
-     * @param {Object} formData - The data submitted from the form.
-     * @returns {Promise<void>} Resolves after the item is successfully added or edited.
+     * @param {Object} formData - Les données soumises via le formulaire.
+     * @returns {Promise<void>} Résout une fois que l'item est ajouté ou modifié avec succès.
      */
     const handleSubmit = async (formData) => {
       try {
         if (isEditMode.value) {
           await itemStore.editItem(route.params.id, formData);
-          alert("Item modifié avec succès !");
+          alert("L'item a été modifié avec succès !");
         } else {
           await itemStore.addItem(formData);
-          alert("Item créé avec succès !");
+          alert("L'item a été créé avec succès !");
           router.push({ name: "ItemDetail", params: { permalink: itemStore.selectedItem.permalink } });
           return;
         }
@@ -69,10 +69,10 @@ export default {
     };
 
     /**
-     * Loads the initial data for the form in edit mode.
-     * Fetches the item by ID and loads all tags if not already loaded.
+     * Charge les données initiales du formulaire en mode édition.
+     * Récupère l'item par son ID et charge tous les tags s'ils ne sont pas déjà chargés.
      *
-     * @returns {Promise<void>} Resolves after the item and tags are loaded.
+     * @returns {Promise<void>} Résout une fois que les données de l'item et les tags sont chargées.
      */
     const loadItemData = async () => {
       try {
@@ -80,7 +80,7 @@ export default {
         const item = itemStore.selectedItem;
 
         if (!item) {
-          throw new Error("Item not found or could not be loaded.");
+          throw new Error("Item introuvable ou impossible à charger.");
         }
 
         if (!tagStore.tags.length) {

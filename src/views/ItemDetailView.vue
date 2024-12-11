@@ -1,9 +1,9 @@
 <template>
   <div class="container mt-4">
-    <h1>Item Details</h1>
+    <h1>Détails de l'item</h1>
     <div v-if="loading" class="text-center">
       <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
+        <span class="visually-hidden">Chargement...</span>
       </div>
     </div>
     <div v-else-if="error" class="alert alert-danger">
@@ -26,7 +26,7 @@
       </div>
     </div>
     <div v-else>
-      <em>Loading item data...</em>
+      <em>Chargement des données de l'item...</em>
     </div>
   </div>
 </template>
@@ -58,11 +58,14 @@ export default {
     const loading = computed(() => itemStore.loading);
     const error = computed(() => itemStore.error);
 
+    /**
+     * Charge les détails de l'item via son permalink.
+     */
     onMounted(async () => {
       try {
         await itemStore.loadItemByPermalink(permalink);
       } catch (err) {
-        console.error("Failed to load item details:", err);
+        console.error("Échec du chargement des détails de l'item :", err);
       }
     });
 
@@ -76,6 +79,4 @@ export default {
 };
 </script>
 
-
-<style scoped>
-</style>
+<style scoped></style>

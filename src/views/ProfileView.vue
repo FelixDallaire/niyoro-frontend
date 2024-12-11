@@ -48,35 +48,81 @@ export default {
         const loading = ref(false);
         const error = ref(null);
 
+        /**
+         * Loads the user profile based on the provided ID or the current user.
+         */
         const loadProfile = async () => {
             try {
                 loading.value = true;
-
-                if (props.id) {
-                    await userStore.loadUserById(props.id);
-                    profile.value = userStore.selectedUser;
-                } else {
-                    await userStore.loadCurrentUser();
-                    profile.value = userStore.currentUser;
-                }
-
-                if (profile.value) {
-                    fullName.value = `${profile.value.first_name || ""} ${profile.value.last_name || ""}`.trim();
-
-                    formattedDate.value = profile.value.createdAt
-                        ? new Date(profile.value.createdAt).toLocaleDateString("fr-FR", {
-                            day: "2-digit",
-                            month: "long",
-                            year: "numeric",
-                        })
-                        : "Date inconnue";
-                }
+                const user = props.id
+                    ? await loadUserById(props.id)
+                    : await loadCurrentUser();
+                profile.value = user;
+                updateProfileDetails(user);
             } catch (err) {
-                console.error("Impossible de charger le profil:", err);
-                error.value = "Impossible de charger le profil.";
+                handleLoadError(err);
             } finally {
                 loading.value = false;
             }
+        };
+
+        /**
+         * Loads a user by their ID from the store.
+         * 
+         * @param {String} userId - The ID of the user to load.
+         * @returns {Object} The loaded user profile.
+         */
+        const loadUserById = async (userId) => {
+            await userStore.loadUserById(userId);
+            return userStore.selectedUser;
+        };
+
+        /**
+         * Loads the current user profile from the store.
+         * 
+         * @returns {Object} The current user's profile.
+         */
+        const loadCurrentUser = async () => {
+            await userStore.loadCurrentUser();
+            return userStore.currentUser;
+        };
+
+        /**
+         * Updates the local details such as full name and formatted date based on the user profile.
+         * 
+         * @param {Object} user - The user profile object.
+         */
+        const updateProfileDetails = (user) => {
+            if (user) {
+                fullName.value = `${user.first_name || ""} ${user.last_name || ""}`.trim();
+                formattedDate.value = user.createdAt
+                    ? formatDate(user.createdAt)
+                    : "Date inconnue";
+            }
+        };
+
+        /**
+         * Formats a date string to a localized French format.
+         * 
+         * @param {String} dateString - The date string to format.
+         * @returns {String} The formatted date.
+         */
+        const formatDate = (dateString) => {
+            return new Date(dateString).toLocaleDateString("fr-FR", {
+                day: "2-digit",
+                month: "long",
+                year: "numeric",
+            });
+        };
+
+        /**
+         * Handles errors during the profile loading process.
+         * 
+         * @param {Error} err - The error object.
+         */
+        const handleLoadError = (err) => {
+            console.error("Impossible de charger le profil:", err);
+            error.value = "Impossible de charger le profil.";
         };
 
         onMounted(loadProfile);

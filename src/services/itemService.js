@@ -1,5 +1,5 @@
-import axios from 'axios';
-import apiBaseUrl from '../config/apiConfig';
+import axios from "axios";
+import apiBaseUrl from "../config/apiConfig";
 
 export const fetchItems = async () => {
   return await axios.get(`${apiBaseUrl}/items`);

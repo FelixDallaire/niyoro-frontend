@@ -10,9 +10,7 @@
           class="btn d-flex align-items-center justify-content-center rounded-circle" :class="{
             'btn-primary': userReaction?.type !== String(type.value),
             'btn-danger': userReaction?.type === String(type.value),
-          }" 
-          @click="handleReaction(type.value)" 
-          :title="type.label"
+          }" @click="handleReaction(type.value)" :title="type.label"
           :disabled="userReaction && userReaction.type !== String(type.value)">
           <i :class="type.icon"></i>
         </button>

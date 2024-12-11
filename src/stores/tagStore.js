@@ -21,13 +21,13 @@ export const useTagStore = defineStore("tagStore", {
       try {
         const response = await getAllTags();
         this.tags = response.data;
-    
+
         this.tagsById = {};
         this.tags.forEach((tag) => {
           this.tagsById[tag._id] = tag;
         });
-    
-        return this.tags; 
+
+        return this.tags;
       } catch (err) {
         this.error = err.message;
         return [];
@@ -35,7 +35,7 @@ export const useTagStore = defineStore("tagStore", {
         this.loading = false;
       }
     },
-    
+
     async loadTagById(tagId) {
       this.loading = true;
       try {

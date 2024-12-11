@@ -68,6 +68,7 @@ export const useItemStore = defineStore("itemStore", {
         (data) => {
           this.items.push(data);
           this.myItems.push(data);
+          this.selectedItem = data;
         }
       );
     },

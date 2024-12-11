@@ -1,5 +1,5 @@
-import axios from 'axios';
-import apiBaseUrl from '../config/apiConfig';
+import axios from "axios";
+import apiBaseUrl from "../config/apiConfig";
 
 export const signup = async (signupData) => {
   return await axios.post(`${apiBaseUrl}/auth/signup`, signupData);
@@ -11,8 +11,8 @@ export const login = async (loginData) => {
 
 export const setAuthToken = (token) => {
   if (token) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   } else {
-    delete axios.defaults.headers.common['Authorization'];
+    delete axios.defaults.headers.common["Authorization"];
   }
 };

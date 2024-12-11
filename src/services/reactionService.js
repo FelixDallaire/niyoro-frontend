@@ -1,8 +1,11 @@
-import axios from 'axios';
-import apiBaseUrl from '../config/apiConfig';
+import axios from "axios";
+import apiBaseUrl from "../config/apiConfig";
 
 export const createReaction = async (itemId, reactionData) => {
-  return await axios.post(`${apiBaseUrl}/items/${itemId}/reactions`, reactionData);
+  return await axios.post(
+    `${apiBaseUrl}/items/${itemId}/reactions`,
+    reactionData
+  );
 };
 
 export const getReactionsByItem = async (itemId) => {

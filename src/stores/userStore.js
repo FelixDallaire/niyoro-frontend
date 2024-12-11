@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia';
+import { defineStore } from "pinia";
 import {
   getUser,
   updateUser,
@@ -7,9 +7,9 @@ import {
   getUserById,
   updateUserById,
   deleteUserById,
-} from '../services/userService';
+} from "../services/userService";
 
-export const useUserStore = defineStore('userStore', {
+export const useUserStore = defineStore("userStore", {
   state: () => ({
     currentUser: null,
     users: [],

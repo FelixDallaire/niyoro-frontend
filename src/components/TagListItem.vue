@@ -1,37 +1,21 @@
 <template>
     <li class="list-group-item d-flex justify-content-between align-items-center">
         <div v-if="isEditing" class="d-flex w-100">
-            <input
-                v-model="editedTagName"
-                type="text"
-                class="form-control me-2"
-                :class="{ 'is-invalid': hasValidationError }"
-                @keydown.enter="confirmEdit"
-            />
+            <input v-model="editedTagName" type="text" class="form-control me-2"
+                :class="{ 'is-invalid': hasValidationError }" @keydown.enter="confirmEdit" />
             <div v-if="hasValidationError" class="invalid-feedback">Tag invalide.</div>
         </div>
         <div v-else class="w-100">
             {{ tag.name }}
         </div>
         <div class="d-flex align-items-center ms-3">
-            <button
-                v-if="!isEditing"
-                class="btn btn-secondary btn-sm me-2"
-                @click="startEdit"
-            >
+            <button v-if="!isEditing" class="btn btn-secondary btn-sm me-2" @click="startEdit">
                 <i class="bi bi-pencil-fill"></i>
             </button>
-            <button
-                v-else
-                class="btn btn-secondary btn-sm me-2"
-                @click="confirmEdit"
-            >
+            <button v-else class="btn btn-secondary btn-sm me-2" @click="confirmEdit">
                 <i class="bi bi-check-lg"></i>
             </button>
-            <button
-                class="btn btn-danger btn-sm"
-                @click="confirmDelete"
-            >
+            <button class="btn btn-danger btn-sm" @click="confirmDelete">
                 <i class="bi bi-trash3-fill"></i>
             </button>
         </div>
@@ -87,5 +71,4 @@ export default {
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

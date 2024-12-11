@@ -1,5 +1,5 @@
-import axios from 'axios';
-import apiBaseUrl from '../config/apiConfig';
+import axios from "axios";
+import apiBaseUrl from "../config/apiConfig";
 
 export const createTag = async (tagData) => {
   return await axios.post(`${apiBaseUrl}/tags`, tagData);

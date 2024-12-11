@@ -31,9 +31,15 @@ export default {
     },
   },
   methods: {
+    /**
+     * Redirige vers la page d'édition de l'item.
+     */
     editItem() {
       this.$router.push({ name: "EditItem", params: { id: this.itemId } });
     },
+    /**
+     * Demande confirmation avant de supprimer l'item et exécute la suppression.
+     */
     confirmDelete() {
       if (confirm("Êtes-vous sûr de vouloir supprimer cet item ?")) {
         const itemStore = useItemStore();

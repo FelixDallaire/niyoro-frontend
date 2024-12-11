@@ -59,11 +59,37 @@ export default {
     const authStore = useAuthStore();
     const router = useRouter();
 
+    /**
+     * Indique si l'utilisateur est authentifié.
+     * 
+     * @returns {Boolean} True si l'utilisateur est connecté, sinon False.
+     */
     const isAuthenticated = computed(() => authStore.isAuthenticated);
+
+    /**
+     * Indique si l'utilisateur actuel est administrateur.
+     * 
+     * @returns {Boolean} True si l'utilisateur est admin, sinon False.
+     */
     const is_admin = computed(() => authStore.is_admin);
+
+    /**
+     * Récupère l'avatar de l'utilisateur connecté.
+     * 
+     * @returns {String} URL de l'avatar de l'utilisateur.
+     */
     const userAvatar = computed(() => authStore.user?.avatar);
+
+    /**
+     * Récupère le nom d'utilisateur de l'utilisateur connecté.
+     * 
+     * @returns {String} Nom d'utilisateur.
+     */
     const username = computed(() => authStore.user?.username);
 
+    /**
+     * Déconnecte l'utilisateur et le redirige vers la page de connexion.
+     */
     const logout = () => {
       authStore.logoutUser(router);
     };
@@ -78,7 +104,6 @@ export default {
   },
 };
 </script>
-
 
 <style scoped>
 .navbar {

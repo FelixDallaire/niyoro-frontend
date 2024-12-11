@@ -47,11 +47,18 @@ export default {
         };
     },
     methods: {
+        /**
+         * Active le mode d'édition et initialise le nom du tag pour modification.
+         */
         startEdit() {
             this.isEditing = true;
             this.editedTagName = this.tag.name;
             this.hasValidationError = false;
         },
+        /**
+         * Valide le nouveau nom du tag et applique les modifications si valide.
+         * Émet un événement pour informer le parent de la modification.
+         */
         async confirmEdit() {
             if (this.isInvalidName(this.editedTagName)) {
                 this.hasValidationError = true;
@@ -61,9 +68,18 @@ export default {
             await this.onEdit(this.tag._id, { name: this.editedTagName });
             this.isEditing = false;
         },
+        /**
+         * Confirme la suppression du tag et émet un événement pour informer le parent.
+         */
         confirmDelete() {
             this.onDelete(this.tag._id);
         },
+        /**
+         * Vérifie si un nom de tag est invalide.
+         * 
+         * @param {String} name - Le nom du tag à valider.
+         * @returns {Boolean} True si le nom est invalide, sinon False.
+         */
         isInvalidName(name) {
             return !name || name.trim() === "";
         },

@@ -47,6 +47,10 @@ export default {
       password: ref(false),
     };
 
+    /**
+     * Gère la soumission du formulaire de connexion après validation.
+     * Si les champs ne sont pas valides, l'envoi est annulé.
+     */
     const handleSignin = async () => {
       attemptedSubmit.value = true;
       validateForm();
@@ -71,11 +75,19 @@ export default {
       }
     };
 
+    /**
+     * Valide l'ensemble des champs du formulaire.
+     */
     const validateForm = () => {
       validateField('email');
       validateField('password');
     };
 
+    /**
+     * Valide un champ spécifique selon ses règles.
+     *
+     * @param {String} field - Le nom du champ à valider.
+     */
     const validateField = (field) => {
       switch (field) {
         case 'email':
@@ -87,6 +99,12 @@ export default {
       }
     };
 
+    /**
+     * Retourne la classe de validation appropriée pour un champ.
+     *
+     * @param {String} field - Le nom du champ.
+     * @returns {String} La classe CSS de validation.
+     */
     const validationClass = (field) => {
       if (!attemptedSubmit.value) return '';
       return isValid[field].value ? 'is-valid' : 'is-invalid';

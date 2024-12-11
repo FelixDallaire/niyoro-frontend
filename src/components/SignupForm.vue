@@ -68,7 +68,7 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { signup } from '../services/authService';
 
 export default {
@@ -92,12 +92,14 @@ export default {
       confirmPassword: ref(false),
     };
 
+    /**
+     * Gère la soumission du formulaire d'inscription après validation.
+     */
     const handleSignup = async () => {
       attemptedSubmit.value = true;
       validateForm();
-      console.log('Form validation status:', Object.fromEntries(Object.entries(isValid).map(([key, val]) => [key, val.value])));
+
       if (!Object.values(isValid).every((field) => field.value)) {
-        console.log('Form validation failed:', Object.fromEntries(Object.entries(isValid).map(([key, val]) => [key, val.value])));
         return;
       }
 
@@ -111,11 +113,9 @@ export default {
 
       try {
         await signup(userData);
-        console.log('Signup successful, redirecting to login page.');
         window.location.href = '/login';
       } catch (error) {
-        console.log('Signup error:', error);
-        if (error.response && error.response.data && error.response.data.message) {
+        if (error.response?.data?.message) {
           errorMessage.value = error.response.data.message;
         } else {
           errorMessage.value = "Une erreur est survenue lors de l'inscription.";
@@ -123,6 +123,9 @@ export default {
       }
     };
 
+    /**
+     * Valide l'ensemble des champs du formulaire.
+     */
     const validateForm = () => {
       validateField('username');
       validateField('firstName');
@@ -132,6 +135,11 @@ export default {
       validateField('confirmPassword');
     };
 
+    /**
+     * Valide un champ spécifique selon ses règles.
+     *
+     * @param {String} field - Le nom du champ à valider.
+     */
     const validateField = (field) => {
       switch (field) {
         case 'username':
@@ -150,12 +158,18 @@ export default {
           isValid.password.value = password.value.length >= 6;
           break;
         case 'confirmPassword':
-          isValid.confirmPassword.value = password.value === confirmPassword.value && confirmPassword.value.trim() !== '';
+          isValid.confirmPassword.value =
+            password.value === confirmPassword.value && confirmPassword.value.trim() !== '';
           break;
       }
-      console.log(`Validation status for ${field}:`, isValid[field].value);
     };
 
+    /**
+     * Retourne la classe CSS de validation appropriée pour un champ.
+     *
+     * @param {String} field - Le nom du champ.
+     * @returns {String} La classe CSS correspondant au statut de validation.
+     */
     const validationClass = (field) => {
       if (!attemptedSubmit.value) return '';
       return isValid[field].value ? 'is-valid' : 'is-invalid';

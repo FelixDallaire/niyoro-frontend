@@ -68,13 +68,22 @@ export default {
     },
   },
   computed: {
+    /**
+     * Détermine si l'utilisateur actuel est le créateur de l'item.
+     * 
+     * @returns {Boolean} True si l'utilisateur est le créateur, sinon False.
+     */
     isOwner() {
       return (
         (this.currentUser?.userId &&
-          this.currentUser.userId === this.item?.created_by?._id) ??
-        false
+          this.currentUser.userId === this.item?.created_by?._id) ?? false
       );
     },
+    /**
+     * Formate la date de création de l'item.
+     * 
+     * @returns {String} La date formatée en français.
+     */
     formattedCreatedAt() {
       const options = {
         day: "2-digit",
@@ -89,22 +98,41 @@ export default {
     },
   },
   methods: {
+    /**
+     * Met en surbrillance le code de l'item si présent.
+     */
     highlightCode() {
       if (this.$refs.codeBlock) {
         this.$refs.codeBlock.textContent = this.item.content;
         hljs.highlightElement(this.$refs.codeBlock);
       }
     },
+    /**
+     * Alterne l'état "sticky" de l'item.
+     */
     async toggleSticky() {
-      const itemStore = useItemStore();
-      await itemStore.togglePin(this.item._id, this.item.sticky);
+      try {
+        const itemStore = useItemStore();
+        await itemStore.togglePin(this.item._id, this.item.sticky);
+      } catch (err) {
+        console.error("Erreur lors de la mise à jour de l'état sticky :", err);
+      }
     },
+    /**
+     * Redirige vers la page des détails de l'item.
+     */
     viewDetails() {
       this.$router.push({
         name: "ItemDetail",
         params: { permalink: this.item.permalink },
       });
     },
+    /**
+     * Récupère le nom d'un tag à partir de son ID.
+     * 
+     * @param {String} tagId - L'ID du tag.
+     * @returns {String} Le nom du tag ou "Tag inconnu" si non trouvé.
+     */
     getTagName(tagId) {
       const tagStore = useTagStore();
       const tag = tagStore.getTagById(tagId);
@@ -115,6 +143,9 @@ export default {
     this.highlightCode();
   },
   watch: {
+    /**
+     * Observe les modifications du contenu de l'item et met à jour la surbrillance.
+     */
     "item.content": function () {
       this.highlightCode();
     },

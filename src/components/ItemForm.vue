@@ -97,6 +97,9 @@ export default {
       longitude: true,
     });
 
+    /**
+     * Met à jour les données locales lorsque `initialData` change.
+     */
     watch(
       () => props.initialData,
       (newData) => {
@@ -105,6 +108,11 @@ export default {
       { immediate: true }
     );
 
+    /**
+     * Valide un champ spécifique.
+     * 
+     * @param {String} field - Le nom du champ à valider.
+     */
     const validateField = (field) => {
       switch (field) {
         case "title":
@@ -125,6 +133,9 @@ export default {
       }
     };
 
+    /**
+     * Valide les champs de latitude et de longitude.
+     */
     const validateCoordinates = () => {
       const lat = formData.value.latitude;
       const lon = formData.value.longitude;
@@ -138,15 +149,27 @@ export default {
       isValid.value.longitude = lon !== null && lon >= -180 && lon <= 180;
     };
 
+    /**
+     * Valide tous les champs du formulaire.
+     */
     const validateForm = () => {
       Object.keys(isValid.value).forEach(validateField);
     };
 
+    /**
+     * Retourne la classe de validation pour un champ donné.
+     * 
+     * @param {String} field - Le nom du champ.
+     * @returns {String} La classe CSS de validation.
+     */
     const validationClass = (field) => {
       if (!attemptedSubmit.value) return "";
       return isValid.value[field] ? "is-valid" : "is-invalid";
     };
 
+    /**
+     * Gère la soumission du formulaire après validation.
+     */
     const handleSubmit = () => {
       attemptedSubmit.value = true;
       validateForm();

@@ -26,7 +26,6 @@
   </div>
 </template>
 
-
 <script>
 import { onMounted, computed } from "vue";
 import { useReactionStore } from "@/stores/reactionStore";
@@ -62,17 +61,25 @@ export default {
       { label: "Inapproprié", value: 4, icon: "bi bi-exclamation-circle-fill" },
     ];
 
+    /**
+     * Retourne le nombre de réactions d'un type spécifique pour cet item.
+     * 
+     * @param {Number} type - Le type de réaction.
+     * @returns {Number} Le nombre de réactions du type donné.
+     */
     const getReactionCount = (type) =>
       reactions.value.filter(
         (reaction) =>
           reaction.type === String(type) && reaction.item_id === props.itemId
       ).length;
 
-
-    const canReact = (type) => {
-      return !userReaction.value || userReaction.value.type === type;
-    };
-
+    /**
+     * Gère l'ajout ou la suppression d'une réaction.
+     * Si une réaction existe déjà du même type, elle est supprimée.
+     * Sinon, une nouvelle réaction est ajoutée.
+     * 
+     * @param {Number} type - Le type de réaction à gérer.
+     */
     const handleReaction = async (type) => {
       try {
         if (userReaction.value?.type === String(type)) {
@@ -83,15 +90,18 @@ export default {
 
         await reactionStore.loadReactionsByItem(props.itemId);
       } catch (err) {
-        console.error("Failed to handle reaction:", err);
+        console.error("Erreur lors de la gestion de la réaction :", err);
       }
     };
 
+    /**
+     * Charge les réactions associées à cet item lors du montage du composant.
+     */
     onMounted(async () => {
       try {
         await reactionStore.loadReactionsByItem(props.itemId);
       } catch (err) {
-        console.error("Failed to load reactions:", err);
+        console.error("Erreur lors du chargement des réactions :", err);
       }
     });
 

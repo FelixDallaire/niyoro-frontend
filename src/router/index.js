@@ -12,7 +12,12 @@ import TagsView from "@/views/TagsView.vue";
 const routes = [
   { path: "/signup", name: "Signup", component: SignupView },
   { path: "/login", name: "Login", component: LoginView },
-  { path: "/", name: "Home", component: HomeView },
+  {
+    path: "/:tag?",
+    name: "Home",
+    component: HomeView,
+    props: (route) => ({ initialTag: route.params.tag })
+  },
   {
     path: "/add",
     name: "AddItem",
@@ -63,7 +68,10 @@ router.beforeEach((to, from, next) => {
     return next({ name: "Home" });
   }
 
-  if (to.matched.some((record) => record.meta.requiresAuth) && !isAuthenticated) {
+  if (
+    to.matched.some((record) => record.meta.requiresAuth) &&
+    !isAuthenticated
+  ) {
     alert("Veuillez vous connecter pour accéder à cette page.");
     return next({ name: "Login" });
   }

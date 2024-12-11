@@ -35,10 +35,11 @@
 </template>
 
 <script>
-import { onMounted, computed, ref } from "vue";
+import { onMounted, computed, ref, watch } from "vue";
 import { useItemStore } from "@/stores/itemStore";
 import { useUserStore } from "@/stores/userStore";
 import { useTagStore } from "@/stores/tagStore";
+import { useRouter } from "vue-router";
 import ItemCard from "@/components/ItemCard.vue";
 
 export default {
@@ -46,12 +47,20 @@ export default {
   components: {
     ItemCard,
   },
-  setup() {
+  props: {
+    initialTag: {
+      type: String,
+      default: null,
+    },
+  },
+  setup(props) {
+    const router = useRouter();
     const itemStore = useItemStore();
     const userStore = useUserStore();
     const tagStore = useTagStore();
     const showMyItems = ref(false);
     const selectedTag = ref(null);
+    const tagError = ref(false);
 
     const currentUser = computed(() => userStore.currentUser);
     const items = computed(() => itemStore.items);
@@ -62,13 +71,16 @@ export default {
       let filtered = showMyItems.value
         ? itemStore.myItems
         : itemStore.items.filter(
-          (item) =>
-            !item.private ||
-            item.created_by?._id === currentUser.value?.userId
-        );
+            (item) =>
+              !item.private ||
+              item.created_by?._id === currentUser.value?.userId
+          );
 
       if (selectedTag.value) {
-        filtered = filtered.filter((item) => item.tags.includes(selectedTag.value));
+        const tagId = getTagId(selectedTag.value);
+        if (tagId) {
+          filtered = filtered.filter((item) => item.tags.includes(tagId));
+        }
       }
 
       return filtered.sort((a, b) => {
@@ -80,24 +92,45 @@ export default {
     });
 
     const selectTag = (tagId) => {
-      selectedTag.value = tagId;
+      const tagName = getTagName(tagId);
+      selectedTag.value = tagName;
+      router.push({ name: "Home", params: { tag: tagName } });
     };
 
     const clearTagFilter = () => {
       selectedTag.value = null;
+      tagError.value = false;
+      router.push({ name: "Home" });
     };
 
-    const getTagName = (tagId) => {
-      const tag = tagStore.getTagById(tagId);
+    const getTagName = (tagIdOrName) => {
+      const tag = tagStore.tags.find(
+        (tag) => tag._id === tagIdOrName || tag.name === tagIdOrName
+      );
       return tag ? tag.name : "Tag inconnu";
+    };
+
+    const getTagId = (tagName) => {
+      const tag = tagStore.tags.find((tag) => tag.name === tagName);
+      return tag ? tag._id : null;
     };
 
     const loadTags = async () => {
       try {
         const latestTags = await tagStore.loadAllTags();
         tagStore.tags = [...new Set([...tagStore.tags, ...latestTags])];
+        validateInitialTag(); 
       } catch (error) {
         console.error("Error loading tags:", error);
+      }
+    };
+
+    const validateInitialTag = () => {
+      if (props.initialTag && !getTagId(props.initialTag)) {
+        tagError.value = true;
+        router.push({ name: "Home" });
+      } else {
+        selectedTag.value = props.initialTag;
       }
     };
 
@@ -111,6 +144,19 @@ export default {
       await loadTags();
     });
 
+    watch(
+      () => props.initialTag,
+      (newTag) => {
+        if (newTag && !getTagId(newTag)) {
+          tagError.value = true;
+          router.push({ name: "Home" });
+        } else {
+          tagError.value = false;
+          selectedTag.value = newTag;
+        }
+      }
+    );
+
     return {
       items,
       loading,
@@ -122,6 +168,8 @@ export default {
       selectTag,
       clearTagFilter,
       getTagName,
+      getTagId,
+      tagError,
     };
   },
 };

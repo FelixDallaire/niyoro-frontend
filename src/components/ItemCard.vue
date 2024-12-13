@@ -47,6 +47,7 @@
 import hljs from "highlight.js";
 import "highlight.js/styles/paraiso-light.css";
 import { useTagStore } from "@/stores/tagStore";
+import { useItemStore } from "@/stores/itemStore";
 import PinButton from "@/components/PinButton.vue";
 import ItemDropdownMenu from "@/components/ItemDropdownMenu.vue";
 
